@@ -32,10 +32,33 @@ function App() {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: 'var(--background-secondary)' }}
+      >
+        <div className="text-center animate-fade-in-scale">
+          <div className="relative mb-8">
+            {/* 메인 로딩 스피너 */}
+            <div 
+              className="animate-spin rounded-full h-16 w-16 border-4 border-transparent mx-auto"
+              style={{ 
+                borderTopColor: 'var(--primary)',
+                borderRightColor: 'var(--primary)',
+                boxShadow: 'var(--shadow-lg)'
+              }}
+            />
+            {/* 펄스 링 */}
+            <div 
+              className="absolute inset-0 rounded-full animate-ping opacity-20"
+              style={{ backgroundColor: 'var(--primary)' }}
+            />
+          </div>
+          <h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            Portfolio Dashboard
+          </h2>
+          <p className="text-lg animate-pulse" style={{ color: 'var(--muted-foreground)' }}>
+            포트폴리오를 불러오는 중...
+          </p>
         </div>
       </div>
     )

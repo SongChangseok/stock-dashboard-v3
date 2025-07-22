@@ -49,30 +49,37 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in-scale">
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
       
-      <div className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full mx-4 ${sizeClasses[size]}`}>
+      <div 
+        className={`relative rounded-2xl w-full mx-4 animate-slide-in-bottom ${sizeClasses[size]}`}
+        style={{ 
+          backgroundColor: 'var(--background)', 
+          boxShadow: 'var(--shadow-xl)',
+          border: '1px solid var(--border)'
+        }}
+      >
         {title && (
-          <div className="flex items-center justify-between p-6 pb-3 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-between p-6 pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               {title}
             </h2>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={onClose}
-              className="p-1 h-8 w-8"
+              className="p-2 h-9 w-9 rounded-xl"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         )}
         
-        <div className={title ? 'p-6 pt-3' : 'p-6'}>
+        <div className={title ? 'p-6 pt-4' : 'p-6'}>
           {children}
         </div>
       </div>

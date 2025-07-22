@@ -10,14 +10,17 @@ const Portfolio: React.FC = () => {
   const currentWeights = getCurrentWeights()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-scale">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">포트폴리오 관리</h1>
-          <p className="text-gray-600 dark:text-gray-400">목표 포트폴리오 비중을 설정하고 관리하세요</p>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            포트폴리오 관리
+          </h1>
+          <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
+            목표 포트폴리오 비중을 설정하고 관리하세요
+          </p>
         </div>
-        <Button className="flex items-center space-x-2">
-          <Settings className="h-4 w-4" />
+        <Button className="flex items-center space-x-2 micro-float" icon={<Settings className="h-4 w-4" />}>
           <span>목표 비중 설정</span>
         </Button>
       </div>

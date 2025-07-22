@@ -7,7 +7,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, children, ...props }, ref) => {
     const classes = [
-      'bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700',
+      'bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700',
       className
     ].filter(Boolean).join(' ')
 
@@ -82,7 +82,7 @@ export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement>
 const CardTitle = React.forwardRef<HTMLParagraphElement, CardTitleProps>(
   ({ className, children, ...props }, ref) => {
     const classes = [
-      'text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-white',
+      'text-xl font-bold leading-none tracking-tight text-gray-900 dark:text-white bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text',
       className
     ].filter(Boolean).join(' ')
 

@@ -12,16 +12,16 @@ const ThemeToggle: React.FC = () => {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="sm"
       onClick={toggleTheme}
-      className="p-2 h-9 w-9"
+      className="p-2 h-9 w-9 rounded-xl micro-bounce"
       title={settings.darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {settings.darkMode ? (
-        <Sun className="h-4 w-4" />
+        <Sun className="h-4 w-4 text-yellow-500" />
       ) : (
-        <Moon className="h-4 w-4" />
+        <Moon className="h-4 w-4" style={{ color: 'var(--primary)' }} />
       )}
     </Button>
   )

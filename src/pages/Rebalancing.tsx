@@ -11,14 +11,17 @@ const Rebalancing: React.FC = () => {
   const needsRebalancing = suggestions.length > 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in-scale">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">리밸런싱 관리</h1>
-          <p className="text-gray-600 dark:text-gray-400">포트폴리오 리밸런싱 제안을 확인하세요</p>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            리밸런싱 관리
+          </h1>
+          <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
+            포트폴리오 리밸런싱 제안을 확인하세요
+          </p>
         </div>
-        <Button className="flex items-center space-x-2">
-          <Shuffle className="h-4 w-4" />
+        <Button className="flex items-center space-x-2 micro-float" icon={<Shuffle className="h-4 w-4" />}>
           <span>리밸런싱 시뮬레이션</span>
         </Button>
       </div>

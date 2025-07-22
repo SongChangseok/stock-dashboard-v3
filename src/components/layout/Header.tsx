@@ -15,28 +15,53 @@ const Header: React.FC = () => {
   const isActive = (path: string) => location.pathname === path
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800" style={{ backgroundColor: 'var(--background)', borderColor: 'var(--border)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <Link 
               to="/holdings" 
-              className="flex items-center space-x-2 text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+              className="flex items-center space-x-2 text-xl font-bold transition-all duration-200 hover:scale-105"
+              style={{ color: 'var(--foreground)' }}
             >
-              <TrendingUp className="h-6 w-6 text-blue-600" />
-              <span>Portfolio Dashboard</span>
+              <TrendingUp className="h-6 w-6" style={{ color: 'var(--primary)' }} />
+              <span className="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                Portfolio Dashboard
+              </span>
             </Link>
             
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden md:flex space-x-2">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isActive(item.path)
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? 'text-white shadow-md'
+                      : 'hover:scale-105'
                   }`}
+                  style={isActive(item.path) 
+                    ? { 
+                        background: 'var(--gradient-primary)', 
+                        color: 'var(--primary-foreground)' 
+                      }
+                    : { 
+                        color: 'var(--muted-foreground)',
+                        '--hover-bg': 'var(--muted)'
+                      } as React.CSSProperties
+                  }
+                  onMouseEnter={(e) => {
+                    if (!isActive(item.path)) {
+                      (e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
+                      ;(e.target as HTMLElement).style.color = 'var(--foreground)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive(item.path)) {
+                      (e.target as HTMLElement).style.backgroundColor = 'transparent'
+                      ;(e.target as HTMLElement).style.color = 'var(--muted-foreground)'
+                    }
+                  }}
                 >
                   {item.label}
                 </Link>
@@ -50,16 +75,36 @@ const Header: React.FC = () => {
         </div>
         
         <nav className="md:hidden pb-3">
-          <div className="flex space-x-1">
+          <div className="flex space-x-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex-1 text-center ${
-                  isActive(item.path)
-                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex-1 text-center ${
+                  isActive(item.path) ? 'text-white shadow-md' : ''
                 }`}
+                style={isActive(item.path) 
+                  ? { 
+                      background: 'var(--gradient-primary)', 
+                      color: 'var(--primary-foreground)' 
+                    }
+                  : { 
+                      color: 'var(--muted-foreground)',
+                      backgroundColor: 'var(--muted)'
+                    }
+                }
+                onMouseEnter={(e) => {
+                  if (!isActive(item.path)) {
+                    (e.target as HTMLElement).style.backgroundColor = 'var(--neutral-200)'
+                    ;(e.target as HTMLElement).style.color = 'var(--foreground)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive(item.path)) {
+                    (e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
+                    ;(e.target as HTMLElement).style.color = 'var(--muted-foreground)'
+                  }
+                }}
               >
                 {item.label}
               </Link>

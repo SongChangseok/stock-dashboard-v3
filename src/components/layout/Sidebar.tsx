@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { Download, Upload, FileText, FileSpreadsheet, BarChart3, Target, Shuffle } from 'lucide-react'
+import { Download, Upload, FileText, FileSpreadsheet } from 'lucide-react'
 import { usePortfolioStore } from '../../stores/portfolioStore'
 import Button from '../ui/Button'
 
@@ -76,18 +76,19 @@ const Sidebar: React.FC = () => {
     }
   }
 
-  const menuItems = [
-    { icon: BarChart3, label: '보유 현황', href: '/holdings' },
-    { icon: Target, label: '포트폴리오 관리', href: '/portfolio' },
-    { icon: Shuffle, label: '리밸런싱', href: '/rebalancing' }
-  ]
+  // 메뉴 아이템 정의 (향후 네비게이션 구현 시 사용)
+  // const menuItems = [
+  //   { icon: BarChart3, label: '보유 현황', href: '/holdings' },
+  //   { icon: Target, label: '포트폴리오 관리', href: '/portfolio' },
+  //   { icon: Shuffle, label: '리밸런싱', href: '/rebalancing' }
+  // ]
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen">
+    <aside className="w-64 min-h-screen border-r" style={{ backgroundColor: 'var(--background)', borderColor: 'var(--border)' }}>
       <div className="p-6">
         <div className="space-y-6">
           <div>
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+            <h3 className="text-sm font-semibold mb-4 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               데이터 관리
             </h3>
             <div className="space-y-2">

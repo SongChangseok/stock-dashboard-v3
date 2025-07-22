@@ -74,12 +74,12 @@ function Table<T extends Record<string, any>>({
     }
     
     return sortConfig.direction === 'asc' 
-      ? <ChevronUp className="h-4 w-4 text-blue-600" />
-      : <ChevronDown className="h-4 w-4 text-blue-600" />
+      ? <ChevronUp className="h-4 w-4" style={{ color: 'var(--primary)' }} />
+      : <ChevronDown className="h-4 w-4" style={{ color: 'var(--primary)' }} />
   }
 
   const tableClasses = [
-    'min-w-full divide-y divide-gray-200 dark:divide-gray-700',
+    'min-w-full',
     className
   ].filter(Boolean).join(' ')
 
@@ -87,28 +87,44 @@ function Table<T extends Record<string, any>>({
     <div className="space-y-4">
       {searchable && (
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--muted-foreground)' }} />
           <Input
             type="text"
             placeholder={searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            leftIcon={<Search className="h-4 w-4" />}
           />
         </div>
       )}
       
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: 'var(--border)' }}>
         <table className={tableClasses}>
-          <thead className="bg-gray-50 dark:bg-gray-900/50">
+          <thead style={{ backgroundColor: 'var(--muted)' }}>
             <tr>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className={`px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${
-                    column.sortable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800' : ''
+                  className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider transition-colors ${
+                    column.sortable ? 'cursor-pointer hover:bg-opacity-80' : ''
                   }`}
+                  style={{ 
+                    color: 'var(--muted-foreground)',
+                    ...(column.sortable && {
+                      ':hover': { backgroundColor: 'var(--neutral-200)' }
+                    })
+                  }}
                   onClick={column.sortable ? () => handleSort(column.key) : undefined}
+                  onMouseEnter={(e) => {
+                    if (column.sortable) {
+                      (e.target as HTMLElement).style.backgroundColor = 'var(--neutral-200)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (column.sortable) {
+                      (e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
+                    }
+                  }}
                 >
                   <div className="flex items-center space-x-1">
                     <span>{column.header}</span>
@@ -118,23 +134,29 @@ function Table<T extends Record<string, any>>({
               ))}
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody style={{ backgroundColor: 'var(--background)' }}>
             {sortedAndFilteredData.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                  className="px-6 py-8 text-center"
+                  style={{ color: 'var(--muted-foreground)' }}
                 >
                   {searchQuery ? 'No results found' : 'No data available'}
                 </td>
               </tr>
             ) : (
               sortedAndFilteredData.map((row, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
+                <tr 
+                  key={index} 
+                  className="table-row-hover border-t transition-colors"
+                  style={{ borderColor: 'var(--border)' }}
+                >
                   {columns.map((column) => (
                     <td
                       key={String(column.key)}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+                      className="px-6 py-4 whitespace-nowrap text-sm font-medium"
+                      style={{ color: 'var(--foreground)' }}
                     >
                       {column.render 
                         ? column.render(row[column.key], row)

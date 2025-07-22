@@ -7,7 +7,7 @@ import Rebalancing from '../../pages/Rebalancing'
 
 const Layout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--background-secondary)' }}>
       <Header />
       
       <div className="flex">
