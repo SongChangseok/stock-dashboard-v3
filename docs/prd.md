@@ -24,7 +24,7 @@
 
 #### 2.1.1 주식 보유 현황 페이지
 
-**목적**: 현재 보유 중인 주식 현황을 한눈에 파악
+**목적**: 현재 보유 중인 주식 현황을 한눈에 파악하고 기간별 수익률 추적
 
 **주요 기능**:
 
@@ -34,24 +34,44 @@
 - 종목별 비중 파이차트 시각화
 - 주식 추가/수정/삭제 기능
 - 수동 현재가 업데이트 기능
+- **날짜별 포트폴리오 현황 기록**
+  - 간단한 라인차트로 포트폴리오 가치 추이 표시
+  - 기간별 수익률 계산 및 표시 (1개월, 3개월, 1년)
+  - 과거 포트폴리오 스냅샷 저장 및 조회
 
 **데이터 구조**:
 
 ```json
 {
-  "holdings": [
+  "portfolioHistory": [
     {
-      "id": "string",
-      "symbol": "string",
-      "name": "string",
-      "quantity": number,
-      "avgPrice": number,
-      "currentPrice": number,
-      "lastUpdated": "datetime"
+      "date": "datetime",
+      "holdings": [
+        {
+          "id": "string",
+          "symbol": "string",
+          "name": "string",
+          "quantity": number,
+          "avgPrice": number,
+          "currentPrice": number,
+          "marketValue": number,
+          "unrealizedGain": number,
+          "unrealizedGainPercent": number
+        }
+      ],
+      "totalValue": number,
+      "totalGain": number,
+      "totalGainPercent": number
     }
   ]
 }
 ```
+
+**데이터 활용 방식**:
+
+- 최신 날짜의 데이터가 현재 보유 현황
+- 과거 날짜들의 데이터로 기간별 수익률 계산
+- 새로운 데이터 입력시 새로운 날짜 항목으로 추가
 
 #### 2.1.2 포트폴리오 관리 페이지
 
@@ -60,11 +80,10 @@
 **주요 기능**:
 
 - 목표 포트폴리오 비중 설정
-- 현재 vs 목표 비중 비교 시각화 (막대차트)
-- 섹터별/자산별 분류 및 비중 관리
+- 현재 vs 목표 비중 비교 시각화 (간단한 막대차트)
+- 간단한 태그 시스템을 통한 종목 분류
 - 포트폴리오 성과 추적
-  - 총 수익률, 기간별 수익률
-- 목표 달성도 모니터링
+  - 총 수익률 표시
 
 **데이터 구조**:
 
@@ -74,13 +93,7 @@
     {
       "symbol": "string",
       "targetWeight": number,
-      "category": "string"
-    }
-  ],
-  "categories": [
-    {
-      "name": "string",
-      "targetWeight": number
+      "tag": "string"
     }
   ]
 }
@@ -95,16 +108,13 @@
 - 현재 vs 목표 비중 차이 계산
 - 리밸런싱 시뮬레이션
   - 매수/매도 수량 및 금액 제안
-- 리밸런싱 임계값 설정 (예: 5% 이상 차이시 알림)
-- 리밸런싱 히스토리 관리
-- 리밸런싱 실행 체크리스트
+- 고정 임계값 (5%) 기준으로 리밸런싱 필요 종목 표시
 
 **데이터 구조**:
 
 ```json
 {
   "rebalancing": {
-    "threshold": number,
     "suggestions": [
       {
         "symbol": "string",
@@ -112,13 +122,6 @@
         "quantity": number,
         "amount": number,
         "reason": "string"
-      }
-    ],
-    "history": [
-      {
-        "date": "datetime",
-        "actions": array,
-        "totalAmount": number
       }
     ]
   }
@@ -130,20 +133,62 @@
 #### 2.2.1 데이터 관리
 
 - **JSON 파일 업로드/다운로드**
-  - 전체 포트폴리오 데이터 백업/복원
+  - 전체 포트폴리오 히스토리 데이터 백업/복원
+  - 모든 날짜별 보유 현황 및 목표 설정 데이터 포함
+  - 완전한 데이터 이관 및 백업 지원
 - **CSV 파일 업로드/다운로드**
-  - 주식 보유 현황 일괄 등록
-  - 거래 내역 가져오기
+  - 전체 포트폴리오 히스토리 데이터를 플랫 형태로 변환
+  - 각 행이 특정 날짜의 특정 종목 데이터를 나타냄
+  - 업로드시 CSV 데이터를 `portfolioHistory` 구조로 변환
+  - Excel 등 외부 도구에서 데이터 분석 가능
 - **LocalStorage 자동 저장**
   - 실시간 데이터 저장
   - 브라우저 종료 후에도 데이터 유지
+  - 다크모드 설정 등 사용자 환경 설정 저장
+
+**전체 데이터 구조 (JSON 백업 형태)**:
+
+```json
+{
+  "portfolioHistory": [
+    {
+      "date": "datetime",
+      "holdings": [...],
+      "totalValue": number,
+      "totalGain": number,
+      "totalGainPercent": number
+    }
+  ],
+  "targets": [
+    {
+      "symbol": "string",
+      "targetWeight": number,
+      "tag": "string"
+    }
+  ],
+  "settings": {
+    "darkMode": boolean,
+    "lastUpdated": "datetime"
+  }
+}
+```
+
+**CSV 파일 구조 예시**:
+
+```csv
+date,symbol,name,quantity,avgPrice,currentPrice,marketValue,unrealizedGain,unrealizedGainPercent,targetWeight,tag
+2024-01-01,AAPL,Apple Inc.,100,150.00,155.00,15500,500,3.33,30,Tech
+2024-01-01,MSFT,Microsoft Corp.,50,300.00,310.00,15500,500,3.33,25,Tech
+2024-01-02,AAPL,Apple Inc.,100,150.00,158.00,15800,800,5.33,30,Tech
+2024-01-02,MSFT,Microsoft Corp.,50,300.00,312.00,15600,600,4.00,25,Tech
+```
 
 #### 2.2.2 사용자 인터페이스
 
 - **반응형 디자인**: 데스크톱/태블릿/모바일 대응
-- **다크/라이트 모드 지원**
-- **키보드 네비게이션 지원**
+- **다크/라이트 모드 지원**: 사용자 설정 저장
 - **로딩 상태 및 에러 처리**
+- **기본 접근성 지원**
 
 ## 3. 디자인 요구사항
 
@@ -180,10 +225,13 @@
 ### 4.1 프론트엔드
 
 - **프레임워크**: React.js
+- **빌드 툴**: Vite
+- **언어**: TypeScript
 - **스타일링**: Tailwind CSS
-- **차트 라이브러리**: Recharts 또는 Chart.js
+- **차트 라이브러리**: Recharts (파이차트, 라인차트)
 - **아이콘**: Lucide React
-- **상태 관리**: React Hooks (useState, useContext)
+- **상태 관리**: Zustand
+- **코드 품질**: ESLint + Prettier
 
 ### 4.2 데이터 저장
 
@@ -197,6 +245,30 @@
 - Firefox 88+
 - Safari 14+
 - Edge 90+
+
+### 4.4 개발 환경 설정
+
+- **Vite 설정**: TypeScript 템플릿 기반
+- **ESLint 규칙**: React, TypeScript, Prettier 호환
+- **Prettier 설정**: 코드 포맷팅 자동화
+- **TypeScript 설정**: strict mode 활성화
+- **Zustand Store 구조**:
+  ```typescript
+  interface PortfolioStore {
+    portfolioHistory: PortfolioSnapshot[];
+    targets: TargetAllocation[];
+
+    // Actions
+    addPortfolioSnapshot: (snapshot: PortfolioSnapshot) => void;
+    updateCurrentHoldings: (holdings: Holding[]) => void;
+    setTargets: (targets: TargetAllocation[]) => void;
+    loadFromJson: (data: PortfolioData) => void;
+    exportToJson: () => PortfolioData;
+    exportToCsv: () => string;
+    importFromCsv: (csvData: string) => void;
+    calculateRebalancingSuggestions: () => RebalancingSuggestion[];
+  }
+  ```
 
 ## 5. 사용자 스토리
 
@@ -213,7 +285,7 @@
 ### 5.3 리밸런싱 관리
 
 - **As a** 투자자, **I want to** 리밸런싱 제안을 받고 싶다 **so that** 포트폴리오를 목표에 맞게 조정할 수 있다
-- **As a** 사용자, **I want to** 리밸런싱 히스토리를 추적하고 싶다 **so that** 과거 조정 내역을 참고할 수 있다
+- **As a** 사용자, **I want to** 5% 이상 차이나는 종목을 쉽게 파악하고 싶다 **so that** 리밸런싱이 필요한 시점을 알 수 있다
 
 ## 6. 성공 지표 (KPI)
 
@@ -231,26 +303,35 @@
 
 ## 7. 개발 우선순위
 
-### Phase 1 (MVP)
+### Phase 1 (MVP) - 핵심 기능만
 
-1. 주식 보유 현황 페이지 기본 기능
-2. 기본적인 포트폴리오 관리
-3. JSON 데이터 업로드/다운로드
-4. LocalStorage 저장
+1. **주식 보유 현황 페이지**
+   - 주식 추가/수정/삭제
+   - 현재 포트폴리오 현황 테이블
+   - 종목별 비중 파이차트
+2. **포트폴리오 관리 페이지**
+   - 목표 비중 설정
+   - 현재 vs 목표 비중 비교 (간단한 막대차트)
+3. **리밸런싱 관리 페이지**
+   - 리밸런싱 제안 (고정 5% 임계값)
+4. **데이터 관리**
+   - JSON 업로드/다운로드
+   - LocalStorage 저장
 
-### Phase 2
+### Phase 2 - 추가 기능
 
-1. 리밸런싱 관리 페이지
+1. 간단한 라인차트로 수익률 추이 표시
 2. CSV 업로드/다운로드
-3. 차트 시각화 고도화
-4. 다크 모드 지원
+3. 기간별 수익률 계산 (1개월, 3개월, 1년)
+4. 태그 시스템을 통한 종목 분류
+5. 다크모드 지원
 
-### Phase 3
+### Phase 3 - 사용자 경험 개선
 
 1. 고급 필터링 및 정렬
 2. 성과 분석 대시보드
-3. 사용자 경험 개선
-4. 모바일 최적화
+3. 모바일 최적화
+4. 키보드 네비게이션
 
 ## 8. 제약사항 및 고려사항
 
@@ -259,13 +340,6 @@
 - 실시간 주가 데이터 미제공 (사용자 수동 입력)
 - 외부 API 연동 없음
 - 다중 사용자 지원 없음 (로컬 단일 사용자)
-
-### 8.2 향후 확장 가능성
-
-- 증권사 API 연동
-- 클라우드 백업
-- 다중 포트폴리오 관리
-- 소셜 기능 (포트폴리오 공유)
 
 ## 9. 결론
 
