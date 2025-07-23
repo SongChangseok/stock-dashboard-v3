@@ -20,7 +20,7 @@ const Portfolio: React.FC = () => {
             목표 포트폴리오 비중을 설정하고 관리하세요
           </p>
         </div>
-        <Button className="flex items-center space-x-2 micro-float" icon={<Settings className="h-4 w-4" />}>
+        <Button className="flex items-center space-x-2" icon={<Settings className="h-4 w-4" />}>
           <span>목표 비중 설정</span>
         </Button>
       </div>

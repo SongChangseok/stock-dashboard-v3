@@ -38,30 +38,12 @@ const Header: React.FC = () => {
                   className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isActive(item.path)
                       ? 'text-white shadow-md'
-                      : 'hover:scale-105'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                   style={isActive(item.path) 
-                    ? { 
-                        background: 'var(--gradient-primary)', 
-                        color: 'var(--primary-foreground)' 
-                      }
-                    : { 
-                        color: 'var(--muted-foreground)',
-                        '--hover-bg': 'var(--muted)'
-                      } as React.CSSProperties
+                    ? { background: 'var(--gradient-primary)' }
+                    : undefined
                   }
-                  onMouseEnter={(e) => {
-                    if (!isActive(item.path)) {
-                      (e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
-                      ;(e.target as HTMLElement).style.color = 'var(--foreground)'
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive(item.path)) {
-                      (e.target as HTMLElement).style.backgroundColor = 'transparent'
-                      ;(e.target as HTMLElement).style.color = 'var(--muted-foreground)'
-                    }
-                  }}
                 >
                   {item.label}
                 </Link>
@@ -81,30 +63,14 @@ const Header: React.FC = () => {
                 key={item.path}
                 to={item.path}
                 className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex-1 text-center ${
-                  isActive(item.path) ? 'text-white shadow-md' : ''
+                  isActive(item.path) 
+                    ? 'text-white shadow-md' 
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
                 style={isActive(item.path) 
-                  ? { 
-                      background: 'var(--gradient-primary)', 
-                      color: 'var(--primary-foreground)' 
-                    }
-                  : { 
-                      color: 'var(--muted-foreground)',
-                      backgroundColor: 'var(--muted)'
-                    }
+                  ? { background: 'var(--gradient-primary)' }
+                  : undefined
                 }
-                onMouseEnter={(e) => {
-                  if (!isActive(item.path)) {
-                    (e.target as HTMLElement).style.backgroundColor = 'var(--neutral-200)'
-                    ;(e.target as HTMLElement).style.color = 'var(--foreground)'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive(item.path)) {
-                    (e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
-                    ;(e.target as HTMLElement).style.color = 'var(--muted-foreground)'
-                  }
-                }}
               >
                 {item.label}
               </Link>

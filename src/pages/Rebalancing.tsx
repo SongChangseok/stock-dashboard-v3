@@ -21,7 +21,7 @@ const Rebalancing: React.FC = () => {
             포트폴리오 리밸런싱 제안을 확인하세요
           </p>
         </div>
-        <Button className="flex items-center space-x-2 micro-float" icon={<Shuffle className="h-4 w-4" />}>
+        <Button className="flex items-center space-x-2" icon={<Shuffle className="h-4 w-4" />}>
           <span>리밸런싱 시뮬레이션</span>
         </Button>
       </div>
@@ -55,7 +55,7 @@ const Rebalancing: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600 mb-2">5%</p>
+              <p className="text-2xl font-bold mb-2" style={{ color: 'var(--primary)' }}>5%</p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 현재 고정 임계값으로 설정됨
               </p>

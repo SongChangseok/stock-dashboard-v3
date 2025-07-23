@@ -21,7 +21,7 @@ const Holdings: React.FC = () => {
             현재 보유 중인 주식 현황을 관리하세요
           </p>
         </div>
-        <Button className="flex items-center space-x-2 micro-float" icon={<Plus className="h-4 w-4" />}>
+        <Button className="flex items-center space-x-2" icon={<Plus className="h-4 w-4" />}>
           <span>주식 추가</span>
         </Button>
       </div>

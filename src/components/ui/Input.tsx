@@ -24,7 +24,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const baseInputClasses = [
       'flex h-12 w-full px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200',
       'placeholder:text-gray-400 dark:placeholder:text-gray-500',
-      'focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500',
+      'focus:outline-none focus:ring-2 focus:ring-opacity-20 focus:border-current',
+      '[&:focus]:ring-[var(--primary)] [&:focus]:border-[var(--primary)]',
       'disabled:cursor-not-allowed disabled:opacity-50',
       'dark:text-white',
       variants[variant],
@@ -47,7 +48,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative group">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[var(--primary)] transition-colors">
               {leftIcon}
             </div>
           )}
@@ -66,7 +67,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
           {/* 포커스 상태를 나타내는 글로우 효과 */}
-          <div className="absolute inset-0 rounded-xl bg-blue-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
+          <div className="absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" style={{ backgroundColor: 'color-mix(in srgb, var(--primary) 5%, transparent)' }} />
         </div>
         {error && (
           <p id={errorId} className="text-sm font-medium text-red-600 dark:text-red-400 flex items-center gap-1" role="alert">
