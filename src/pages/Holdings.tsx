@@ -27,7 +27,7 @@ const Holdings: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="micro-float">
+        <Card>
           <CardHeader>
             <CardTitle>보유 종목 수</CardTitle>
           </CardHeader>
@@ -38,7 +38,7 @@ const Holdings: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="micro-float">
+        <Card>
           <CardHeader>
             <CardTitle>총 평가액</CardTitle>
           </CardHeader>
@@ -53,7 +53,7 @@ const Holdings: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="micro-float">
+        <Card>
           <CardHeader>
             <CardTitle>총 손익</CardTitle>
           </CardHeader>
