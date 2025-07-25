@@ -10,15 +10,30 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = 'text', label, error, helper, leftIcon, rightIcon, variant = 'default', id, ...props }, ref) => {
+  (
+    {
+      className,
+      type = 'text',
+      label,
+      error,
+      helper,
+      leftIcon,
+      rightIcon,
+      variant = 'default',
+      id,
+      ...props
+    },
+    ref
+  ) => {
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`
     const errorId = error ? `${inputId}-error` : undefined
     const helperId = helper ? `${inputId}-helper` : undefined
-    
+
     const variants = {
       default: 'border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800',
       filled: 'border-0 bg-gray-100 dark:bg-gray-700',
-      minimal: 'border-0 border-b-2 border-gray-300 bg-transparent rounded-none dark:border-gray-600'
+      minimal:
+        'border-0 border-b-2 border-gray-300 bg-transparent rounded-none dark:border-gray-600',
     }
 
     const baseInputClasses = [
@@ -32,18 +47,24 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       leftIcon && 'pl-11',
       rightIcon && 'pr-11',
       error ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : '',
-      className
-    ].filter(Boolean).join(' ')
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ')
 
     return (
       <div className="space-y-2">
         {label && (
-          <label 
+          <label
             htmlFor={inputId}
             className="block text-sm font-semibold text-gray-900 dark:text-gray-100"
           >
             {label}
-            {props.required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
+            {props.required && (
+              <span className="text-red-500 ml-1" aria-label="required">
+                *
+              </span>
+            )}
           </label>
         )}
         <div className="relative group">
@@ -67,12 +88,23 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
           {/* 포커스 상태를 나타내는 글로우 효과 */}
-          <div className="absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" style={{ backgroundColor: 'color-mix(in srgb, var(--primary) 5%, transparent)' }} />
+          <div
+            className="absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--primary) 5%, transparent)' }}
+          />
         </div>
         {error && (
-          <p id={errorId} className="text-sm font-medium text-red-600 dark:text-red-400 flex items-center gap-1" role="alert">
+          <p
+            id={errorId}
+            className="text-sm font-medium text-red-600 dark:text-red-400 flex items-center gap-1"
+            role="alert"
+          >
             <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
             </svg>
             {error}
           </p>

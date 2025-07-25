@@ -6,7 +6,7 @@ import Button from '../components/ui/Button'
 
 const Rebalancing: React.FC = () => {
   const { getRebalancingSuggestions } = usePortfolioStore()
-  
+
   const suggestions = getRebalancingSuggestions()
   const needsRebalancing = suggestions.length > 0
 
@@ -30,20 +30,23 @@ const Rebalancing: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <AlertTriangle className={`h-5 w-5 ${needsRebalancing ? 'text-orange-500' : 'text-green-500'}`} />
+              <AlertTriangle
+                className={`h-5 w-5 ${needsRebalancing ? 'text-orange-500' : 'text-green-500'}`}
+              />
               <span>리밸런싱 상태</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center">
-              <p className={`text-2xl font-bold mb-2 ${needsRebalancing ? 'text-orange-600' : 'text-green-600'}`}>
+              <p
+                className={`text-2xl font-bold mb-2 ${needsRebalancing ? 'text-orange-600' : 'text-green-600'}`}
+              >
                 {needsRebalancing ? '조정 필요' : '균형 상태'}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {needsRebalancing 
+                {needsRebalancing
                   ? `${suggestions.length}개 종목이 5% 이상 벗어남`
-                  : '모든 종목이 목표 비중 내에 있습니다'
-                }
+                  : '모든 종목이 목표 비중 내에 있습니다'}
               </p>
             </div>
           </CardContent>
@@ -55,7 +58,9 @@ const Rebalancing: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-center">
-              <p className="text-2xl font-bold mb-2" style={{ color: 'var(--primary)' }}>5%</p>
+              <p className="text-2xl font-bold mb-2" style={{ color: 'var(--primary)' }}>
+                5%
+              </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 현재 고정 임계값으로 설정됨
               </p>

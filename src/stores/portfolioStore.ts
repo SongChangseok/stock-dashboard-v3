@@ -151,7 +151,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
       updateCurrentHoldings: holdings =>
         set(state => {
           const { totalValue, totalGain, totalGainPercent } = calculatePortfolioTotals(holdings)
-          
+
           const newSnapshot: PortfolioSnapshot = {
             date: getCurrentISODate(),
             holdings,
@@ -193,7 +193,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
           const updatedHoldings = holdings.map(holding =>
             holding.id === id ? { ...formDataToHolding(formData), id } : holding
           )
-          
+
           get().updateCurrentHoldings(updatedHoldings)
           return state
         }),
@@ -202,7 +202,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
         set(state => {
           const holdings = get().getCurrentHoldings()
           const updatedHoldings = holdings.filter(holding => holding.id !== id)
-          
+
           get().updateCurrentHoldings(updatedHoldings)
           return state
         }),
@@ -328,14 +328,15 @@ export const usePortfolioStore = create<PortfolioStore>()(
           get().setError(null)
 
           const parsedData = csvToPortfolio(csvData)
-          
+
           set(state => ({
             portfolioHistory: parsedData.portfolioHistory || state.portfolioHistory,
             targets: parsedData.targets || state.targets,
             settings: { ...state.settings, lastUpdated: getCurrentISODate() },
           }))
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'CSV 가져오기 중 오류가 발생했습니다.'
+          const errorMessage =
+            error instanceof Error ? error.message : 'CSV 가져오기 중 오류가 발생했습니다.'
           get().setError(errorMessage)
           throw error
         } finally {
@@ -356,7 +357,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
         if (holdings.length === 0) return
 
         const { totalValue, totalGain, totalGainPercent } = calculatePortfolioTotals(holdings)
-        
+
         const snapshot: PortfolioSnapshot = {
           date: getCurrentISODate(),
           holdings: [...holdings],

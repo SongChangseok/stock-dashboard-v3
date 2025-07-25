@@ -6,7 +6,7 @@ import Button from '../components/ui/Button'
 
 const Portfolio: React.FC = () => {
   const { targets, getCurrentWeights } = usePortfolioStore()
-  
+
   const currentWeights = getCurrentWeights()
 
   return (
@@ -36,7 +36,9 @@ const Portfolio: React.FC = () => {
           <CardContent>
             {targets.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400 mb-4">목표 비중이 설정되지 않았습니다</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">
+                  목표 비중이 설정되지 않았습니다
+                </p>
                 <Button size="sm">
                   <Settings className="h-4 w-4 mr-2" />
                   목표 비중 설정하기
@@ -44,7 +46,7 @@ const Portfolio: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                {targets.map((target) => (
+                {targets.map(target => (
                   <div key={target.symbol} className="flex justify-between items-center">
                     <span className="text-sm font-medium">{target.symbol}</span>
                     <span className="text-sm text-gray-600 dark:text-gray-400">

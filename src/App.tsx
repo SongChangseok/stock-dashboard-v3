@@ -6,13 +6,13 @@ import Layout from './components/layout/Layout'
 function App() {
   const [isInitialized, setIsInitialized] = useState(false)
   const { settings } = usePortfolioStore()
-  
+
   useEffect(() => {
     const loadSuccess = loadFromLocalStorage()
     const unsubscribe = subscribeToStore()
-    
+
     setIsInitialized(true)
-    
+
     if (loadSuccess) {
       console.log('Portfolio data loaded from localStorage')
     } else {
@@ -32,23 +32,23 @@ function App() {
 
   if (!isInitialized) {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center"
         style={{ backgroundColor: 'var(--background-secondary)' }}
       >
         <div className="text-center animate-fade-in-scale">
           <div className="relative mb-8">
             {/* 메인 로딩 스피너 */}
-            <div 
+            <div
               className="animate-spin rounded-full h-16 w-16 border-4 border-transparent mx-auto"
-              style={{ 
+              style={{
                 borderTopColor: 'var(--primary)',
                 borderRightColor: 'var(--primary)',
-                boxShadow: 'var(--shadow-lg)'
+                boxShadow: 'var(--shadow-lg)',
               }}
             />
             {/* 펄스 링 */}
-            <div 
+            <div
               className="absolute inset-0 rounded-full animate-ping opacity-20"
               style={{ backgroundColor: 'var(--primary)' }}
             />

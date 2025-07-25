@@ -17,14 +17,16 @@ export interface TableProps<T> {
   className?: string
 }
 
-function Table<T extends Record<string, any>>({ 
-  data, 
-  columns, 
-  searchable = false, 
-  searchPlaceholder = 'Search...', 
-  className 
+function Table<T extends Record<string, any>>({
+  data,
+  columns,
+  searchable = false,
+  searchPlaceholder = 'Search...',
+  className,
 }: TableProps<T>) {
-  const [sortConfig, setSortConfig] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(null)
+  const [sortConfig, setSortConfig] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(
+    null
+  )
   const [searchQuery, setSearchQuery] = useState('')
 
   const sortedAndFilteredData = useMemo(() => {
@@ -60,9 +62,7 @@ function Table<T extends Record<string, any>>({
   const handleSort = (key: keyof T) => {
     setSortConfig(prev => {
       if (prev?.key === key) {
-        return prev.direction === 'asc' 
-          ? { key, direction: 'desc' }
-          : null
+        return prev.direction === 'asc' ? { key, direction: 'desc' } : null
       }
       return { key, direction: 'asc' }
     })
@@ -72,57 +72,59 @@ function Table<T extends Record<string, any>>({
     if (sortConfig?.key !== key) {
       return <ChevronUp className="h-4 w-4 opacity-30" />
     }
-    
-    return sortConfig.direction === 'asc' 
-      ? <ChevronUp className="h-4 w-4" style={{ color: 'var(--primary)' }} />
-      : <ChevronDown className="h-4 w-4" style={{ color: 'var(--primary)' }} />
+
+    return sortConfig.direction === 'asc' ? (
+      <ChevronUp className="h-4 w-4" style={{ color: 'var(--primary)' }} />
+    ) : (
+      <ChevronDown className="h-4 w-4" style={{ color: 'var(--primary)' }} />
+    )
   }
 
-  const tableClasses = [
-    'min-w-full',
-    className
-  ].filter(Boolean).join(' ')
+  const tableClasses = ['min-w-full', className].filter(Boolean).join(' ')
 
   return (
     <div className="space-y-4">
       {searchable && (
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--muted-foreground)' }} />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4"
+            style={{ color: 'var(--muted-foreground)' }}
+          />
           <Input
             type="text"
             placeholder={searchPlaceholder}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             leftIcon={<Search className="h-4 w-4" />}
           />
         </div>
       )}
-      
+
       <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: 'var(--border)' }}>
         <table className={tableClasses}>
           <thead style={{ backgroundColor: 'var(--muted)' }}>
             <tr>
-              {columns.map((column) => (
+              {columns.map(column => (
                 <th
                   key={String(column.key)}
                   className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider transition-colors ${
                     column.sortable ? 'cursor-pointer hover:bg-opacity-80' : ''
                   }`}
-                  style={{ 
+                  style={{
                     color: 'var(--muted-foreground)',
                     ...(column.sortable && {
-                      ':hover': { backgroundColor: 'var(--neutral-200)' }
-                    })
+                      ':hover': { backgroundColor: 'var(--neutral-200)' },
+                    }),
                   }}
                   onClick={column.sortable ? () => handleSort(column.key) : undefined}
-                  onMouseEnter={(e) => {
+                  onMouseEnter={e => {
                     if (column.sortable) {
-                      (e.target as HTMLElement).style.backgroundColor = 'var(--neutral-200)'
+                      ;(e.target as HTMLElement).style.backgroundColor = 'var(--neutral-200)'
                     }
                   }}
-                  onMouseLeave={(e) => {
+                  onMouseLeave={e => {
                     if (column.sortable) {
-                      (e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
+                      ;(e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
                     }
                   }}
                 >
@@ -147,18 +149,18 @@ function Table<T extends Record<string, any>>({
               </tr>
             ) : (
               sortedAndFilteredData.map((row, index) => (
-                <tr 
-                  key={index} 
+                <tr
+                  key={index}
                   className="table-row-hover border-t transition-colors"
                   style={{ borderColor: 'var(--border)' }}
                 >
-                  {columns.map((column) => (
+                  {columns.map(column => (
                     <td
                       key={String(column.key)}
                       className="px-6 py-4 whitespace-nowrap text-sm font-medium"
                       style={{ color: 'var(--foreground)' }}
                     >
-                      {column.render 
+                      {column.render
                         ? column.render(row[column.key], row)
                         : String(row[column.key] ?? '-')}
                     </td>

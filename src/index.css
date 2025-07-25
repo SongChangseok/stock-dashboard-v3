@@ -8,61 +8,62 @@
   font-weight: 45 920;
   font-style: normal;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
+  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2')
+    format('woff2-variations');
 }
 
 @layer base {
   :root {
     /* 메인 브랜드 색상 - 모던 바이올렇 */
-    --primary: #7C3AED;
-    --primary-hover: #6D28D9;
-    --primary-dark: #5B21B6;
-    --primary-light: #EDE9FE;
-    --primary-foreground: #FFFFFF;
+    --primary: #7c3aed;
+    --primary-hover: #6d28d9;
+    --primary-dark: #5b21b6;
+    --primary-light: #ede9fe;
+    --primary-foreground: #ffffff;
 
     /* 성공 색상 - 에메랄드 그린 */
-    --success: #10B981;
+    --success: #10b981;
     --success-hover: #059669;
     --success-dark: #047857;
-    --success-light: #D1FAE5;
-    --success-foreground: #FFFFFF;
+    --success-light: #d1fae5;
+    --success-foreground: #ffffff;
 
     /* 경고 색상 - 삨샤한 앱버 */
-    --warning: #F97316;
-    --warning-hover: #EA580C;
-    --warning-dark: #C2410C;
-    --warning-light: #FED7AA;
-    --warning-foreground: #FFFFFF;
+    --warning: #f97316;
+    --warning-hover: #ea580c;
+    --warning-dark: #c2410c;
+    --warning-light: #fed7aa;
+    --warning-foreground: #ffffff;
 
     /* 에러 색상 - 베벨리 레드 */
-    --error: #EF4444;
-    --error-hover: #DC2626;
-    --error-dark: #B91C1C;
-    --error-light: #FEE2E2;
-    --error-foreground: #FFFFFF;
+    --error: #ef4444;
+    --error-hover: #dc2626;
+    --error-dark: #b91c1c;
+    --error-light: #fee2e2;
+    --error-foreground: #ffffff;
 
     /* 중성 색상 - 리치 슬레이트 팔레트 */
-    --neutral-50: #F8FAFC;
-    --neutral-100: #F1F5F9;
-    --neutral-200: #E2E8F0;
-    --neutral-300: #CBD5E1;
-    --neutral-400: #94A3B8;
-    --neutral-500: #64748B;
+    --neutral-50: #f8fafc;
+    --neutral-100: #f1f5f9;
+    --neutral-200: #e2e8f0;
+    --neutral-300: #cbd5e1;
+    --neutral-400: #94a3b8;
+    --neutral-500: #64748b;
     --neutral-600: #475569;
     --neutral-700: #334155;
-    --neutral-800: #1E293B;
-    --neutral-900: #0F172A;
+    --neutral-800: #1e293b;
+    --neutral-900: #0f172a;
 
     /* 배경 색상 */
-    --background: #FFFFFF;
-    --background-secondary: #F8FAFC;
-    --foreground: #0F172A;
-    --muted: #F1F5F9;
-    --muted-foreground: #64748B;
+    --background: #ffffff;
+    --background-secondary: #f8fafc;
+    --foreground: #0f172a;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
 
     /* 테두리 */
-    --border: #E2E8F0;
-    --border-light: #F1F5F9;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
 
     /* 그림자 시스템 - 더 자연스러운 그림자 */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
@@ -72,19 +73,19 @@
     --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.12);
 
     /* 그라데이션 */
-    --gradient-primary: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
-    --gradient-success: linear-gradient(135deg, #10B981 0%, #047857 100%);
-    --gradient-warm: linear-gradient(135deg, #F97316 0%, #EF4444 100%);
-    --gradient-cool: linear-gradient(135deg, #06B6D4 0%, #7C3AED 100%);
+    --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    --gradient-warm: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+    --gradient-cool: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
   }
 
   /* 다크 모드 색상 */
   .dark {
-    --background: #0F172A;
-    --background-secondary: #1E293B;
-    --foreground: #F8FAFC;
+    --background: #0f172a;
+    --background-secondary: #1e293b;
+    --foreground: #f8fafc;
     --muted: #334155;
-    --muted-foreground: #94A3B8;
+    --muted-foreground: #94a3b8;
     --border: #475569;
     --border-light: #334155;
 
@@ -95,14 +96,31 @@
     --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 10px 10px -5px rgb(0 0 0 / 0.2);
     --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.7);
   }
-  
+
   body {
-    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    font-family:
+      'Pretendard Variable',
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      Roboto,
+      'Helvetica Neue',
+      'Segoe UI',
+      'Apple SD Gothic Neo',
+      'Noto Sans KR',
+      'Malgun Gothic',
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol',
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--background-secondary);
     color: var(--foreground);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   /* 선택 영역 색상 */
@@ -146,15 +164,24 @@
   .dark ::-webkit-scrollbar-thumb:hover {
     background: var(--neutral-500);
   }
-  
+
   code {
-    font-family: 'Pretendard Variable', Pretendard, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    font-family: 'Pretendard Variable', Pretendard, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono',
+      'Courier New', monospace;
   }
-  
+
   /* 숫자 데이터용 세련된 폰트 */
   .font-numeric {
-    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    font-feature-settings: 'tnum' 1, 'zero' 1;
+    font-family:
+      'Pretendard Variable',
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
+    font-feature-settings:
+      'tnum' 1,
+      'zero' 1;
     font-variant-numeric: tabular-nums;
   }
 }
@@ -169,7 +196,7 @@
     box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
   }
-  
+
   /* 버튼 기본 스타일 */
   .btn {
     @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-xl 
@@ -178,7 +205,7 @@
     min-height: 2.75rem;
     box-shadow: var(--shadow);
   }
-  
+
   /* 프라이머리 버튼 */
   .btn-primary {
     background: var(--gradient-primary);
@@ -186,33 +213,33 @@
     border: none;
     box-shadow: var(--shadow-md);
   }
-  
+
   .btn-primary:hover {
     box-shadow: var(--shadow-lg);
     filter: brightness(1.05);
   }
-  
+
   .btn-primary:focus {
     ring-color: var(--primary);
   }
-  
+
   /* 세컨더리 버튼 */
   .btn-secondary {
     background-color: var(--muted);
     color: var(--foreground);
     border: 1px solid var(--border);
   }
-  
+
   .btn-secondary:hover {
     background-color: var(--neutral-200);
     border-color: var(--neutral-300);
   }
-  
+
   .dark .btn-secondary:hover {
     background-color: var(--neutral-700);
     border-color: var(--neutral-600);
   }
-  
+
   /* 위험 버튼 */
   .btn-danger {
     background: var(--gradient-warm);
@@ -220,7 +247,7 @@
     border: none;
     box-shadow: var(--shadow-md);
   }
-  
+
   .btn-danger:hover {
     box-shadow: var(--shadow-lg);
     filter: brightness(1.05);
@@ -353,13 +380,23 @@
   }
 
   @keyframes countUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   @keyframes fadeInScale {

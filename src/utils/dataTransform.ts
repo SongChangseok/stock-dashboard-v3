@@ -79,7 +79,7 @@ export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
   }
 
   const csvRows: CSVRow[] = []
-  
+
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(',')
     if (values.length !== headers.length) {
@@ -90,7 +90,7 @@ export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
     const row: Partial<CSVRow> = {}
     headers.forEach((header, index) => {
       const value = values[index]?.trim()
-      
+
       switch (header) {
         case 'quantity':
         case 'avgPrice':
@@ -99,10 +99,10 @@ export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
         case 'unrealizedGain':
         case 'unrealizedGainPercent':
         case 'targetWeight':
-          (row as any)[header] = parseFloat(value) || 0
+          ;(row as any)[header] = parseFloat(value) || 0
           break
         default:
-          (row as any)[header] = value || ''
+          ;(row as any)[header] = value || ''
       }
     })
 
@@ -112,13 +112,16 @@ export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
   }
 
   // 날짜별로 그룹핑하여 포트폴리오 히스토리 생성
-  const groupedByDate = csvRows.reduce((acc, row) => {
-    if (!acc[row.date]) {
-      acc[row.date] = []
-    }
-    acc[row.date].push(row)
-    return acc
-  }, {} as Record<string, CSVRow[]>)
+  const groupedByDate = csvRows.reduce(
+    (acc, row) => {
+      if (!acc[row.date]) {
+        acc[row.date] = []
+      }
+      acc[row.date].push(row)
+      return acc
+    },
+    {} as Record<string, CSVRow[]>
+  )
 
   const portfolioHistory: PortfolioSnapshot[] = Object.entries(groupedByDate).map(
     ([date, rows]) => {

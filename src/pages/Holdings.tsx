@@ -6,7 +6,7 @@ import Button from '../components/ui/Button'
 
 const Holdings: React.FC = () => {
   const { getCurrentHoldings, getTotalValue } = usePortfolioStore()
-  
+
   const holdings = getCurrentHoldings()
   const totalValue = getTotalValue()
 
@@ -76,9 +76,7 @@ const Holdings: React.FC = () => {
               <p className="text-lg mb-6" style={{ color: 'var(--muted-foreground)' }}>
                 보유 중인 주식이 없습니다
               </p>
-              <Button icon={<Plus className="h-4 w-4" />}>
-                첫 번째 주식 추가하기
-              </Button>
+              <Button icon={<Plus className="h-4 w-4" />}>첫 번째 주식 추가하기</Button>
             </div>
           ) : (
             <div className="text-center py-8">

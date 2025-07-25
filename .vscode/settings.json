@@ -3,5 +3,7 @@
     {
       "file": ".github/instructions/copilot-commit-message-instructions.md"
     }
-  ]
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

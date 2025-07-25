@@ -9,7 +9,9 @@ import type {
 /**
  * 미실현 손익 계산
  */
-export const calculateUnrealizedGain = (holding: Omit<Holding, 'id' | 'marketValue' | 'unrealizedGain' | 'unrealizedGainPercent'>) => {
+export const calculateUnrealizedGain = (
+  holding: Omit<Holding, 'id' | 'marketValue' | 'unrealizedGain' | 'unrealizedGainPercent'>
+) => {
   const marketValue = holding.currentPrice * holding.quantity
   const totalCost = holding.avgPrice * holding.quantity
   const unrealizedGain = marketValue - totalCost
@@ -42,13 +44,16 @@ export const calculatePortfolioTotals = (holdings: Holding[]) => {
  */
 export const calculateWeights = (holdings: Holding[]): Record<string, number> => {
   const totalValue = holdings.reduce((sum, h) => sum + h.marketValue, 0)
-  
+
   if (totalValue === 0) return {}
-  
-  return holdings.reduce((weights, holding) => {
-    weights[holding.symbol] = (holding.marketValue / totalValue) * 100
-    return weights
-  }, {} as Record<string, number>)
+
+  return holdings.reduce(
+    (weights, holding) => {
+      weights[holding.symbol] = (holding.marketValue / totalValue) * 100
+      return weights
+    },
+    {} as Record<string, number>
+  )
 }
 
 /**
@@ -61,29 +66,29 @@ export const generateRebalancingSuggestions = (
 ): RebalancingSuggestion[] => {
   const currentWeights = calculateWeights(holdings)
   const totalValue = holdings.reduce((sum, h) => sum + h.marketValue, 0)
-  
+
   if (totalValue === 0) return []
-  
+
   const suggestions: RebalancingSuggestion[] = []
-  
+
   for (const target of targets) {
     const currentWeight = currentWeights[target.symbol] || 0
     const deviation = Math.abs(currentWeight - target.targetWeight)
-    
+
     if (deviation >= threshold) {
       const currentHolding = holdings.find(h => h.symbol === target.symbol)
       const targetValue = (target.targetWeight / 100) * totalValue
       const currentValue = currentHolding ? currentHolding.marketValue : 0
       const difference = targetValue - currentValue
-      
+
       const action: 'buy' | 'sell' = difference > 0 ? 'buy' : 'sell'
       const amount = Math.abs(difference)
-      
+
       let quantity = 0
       if (currentHolding && currentHolding.currentPrice > 0) {
         quantity = amount / currentHolding.currentPrice
       }
-      
+
       suggestions.push({
         symbol: target.symbol,
         action,
@@ -96,7 +101,7 @@ export const generateRebalancingSuggestions = (
       })
     }
   }
-  
+
   return suggestions.sort((a, b) => b.deviation - a.deviation)
 }
 
@@ -117,11 +122,11 @@ export const calculatePerformanceMetrics = (
       maxDrawdown: 0,
     }
   }
-  
+
   // 기간별 필터링
   const now = new Date()
   const periodStart = new Date()
-  
+
   switch (period) {
     case '1M':
       periodStart.setMonth(now.getMonth() - 1)
@@ -135,9 +140,9 @@ export const calculatePerformanceMetrics = (
     default:
       periodStart.setFullYear(1970) // 모든 데이터
   }
-  
+
   const filteredSnapshots = snapshots.filter(s => new Date(s.date) >= periodStart)
-  
+
   if (filteredSnapshots.length === 0) {
     return {
       totalReturn: 0,
@@ -148,23 +153,25 @@ export const calculatePerformanceMetrics = (
       maxDrawdown: 0,
     }
   }
-  
+
   const firstSnapshot = filteredSnapshots[0]
   const lastSnapshot = filteredSnapshots[filteredSnapshots.length - 1]
-  
+
   // 총 수익률 계산
   const totalReturn = lastSnapshot.totalValue - firstSnapshot.totalValue
-  const totalReturnPercent = firstSnapshot.totalValue > 0 
-    ? (totalReturn / firstSnapshot.totalValue) * 100 
-    : 0
-  
+  const totalReturnPercent =
+    firstSnapshot.totalValue > 0 ? (totalReturn / firstSnapshot.totalValue) * 100 : 0
+
   // 연환산 수익률 계산 (복리)
-  const daysDiff = (new Date(lastSnapshot.date).getTime() - new Date(firstSnapshot.date).getTime()) / (1000 * 60 * 60 * 24)
+  const daysDiff =
+    (new Date(lastSnapshot.date).getTime() - new Date(firstSnapshot.date).getTime()) /
+    (1000 * 60 * 60 * 24)
   const years = daysDiff / 365.25
-  const annualizedReturn = years > 0 && firstSnapshot.totalValue > 0
-    ? (Math.pow(lastSnapshot.totalValue / firstSnapshot.totalValue, 1 / years) - 1) * 100
-    : 0
-  
+  const annualizedReturn =
+    years > 0 && firstSnapshot.totalValue > 0
+      ? (Math.pow(lastSnapshot.totalValue / firstSnapshot.totalValue, 1 / years) - 1) * 100
+      : 0
+
   // 변동성 계산 (일간 수익률의 표준편차를 연환산)
   let volatility = 0
   if (filteredSnapshots.length > 1) {
@@ -176,23 +183,24 @@ export const calculatePerformanceMetrics = (
         dailyReturns.push((currValue - prevValue) / prevValue)
       }
     }
-    
+
     if (dailyReturns.length > 0) {
       const mean = dailyReturns.reduce((sum, r) => sum + r, 0) / dailyReturns.length
-      const variance = dailyReturns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / dailyReturns.length
+      const variance =
+        dailyReturns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / dailyReturns.length
       volatility = Math.sqrt(variance) * Math.sqrt(252) * 100 // 연환산 (252 거래일)
     }
   }
-  
+
   // 샤프 비율 계산 (무위험 수익률을 3%로 가정)
   const riskFreeRate = 3
   const excessReturn = annualizedReturn - riskFreeRate
   const sharpeRatio = volatility > 0 ? excessReturn / volatility : 0
-  
+
   // 최대 낙폭 계산
   let maxDrawdown = 0
   let peak = filteredSnapshots[0].totalValue
-  
+
   for (const snapshot of filteredSnapshots) {
     if (snapshot.totalValue > peak) {
       peak = snapshot.totalValue
@@ -201,7 +209,7 @@ export const calculatePerformanceMetrics = (
       maxDrawdown = Math.max(maxDrawdown, drawdown)
     }
   }
-  
+
   return {
     totalReturn,
     totalReturnPercent,
@@ -224,7 +232,7 @@ export const formatCurrency = (value: number, currency = 'KRW'): string => {
       maximumFractionDigits: 0,
     }).format(value)
   }
-  
+
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

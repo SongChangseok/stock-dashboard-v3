@@ -19,21 +19,21 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   label,
   showValue = false,
   animated = true,
-  className
+  className,
 }) => {
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
-  
+
   const sizeClasses = {
     sm: 'h-2',
     md: 'h-3',
-    lg: 'h-4'
+    lg: 'h-4',
   }
-  
+
   const variants = {
     default: 'from-blue-500 to-blue-600',
     success: 'from-green-500 to-green-600',
     warning: 'from-yellow-500 to-yellow-600',
-    danger: 'from-red-500 to-red-600'
+    danger: 'from-red-500 to-red-600',
   }
 
   return (
@@ -41,14 +41,10 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       {(label || showValue) && (
         <div className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-300">
           {label && <span>{label}</span>}
-          {showValue && (
-            <span className="counter-up">
-              {Math.round(percentage)}%
-            </span>
-          )}
+          {showValue && <span className="counter-up">{Math.round(percentage)}%</span>}
         </div>
       )}
-      
+
       <div className={`progress-bar ${sizeClasses[size]}`}>
         <div
           className={`progress-fill bg-gradient-to-r ${variants[variant]} ${animated ? 'transition-all duration-700 ease-out' : ''}`}

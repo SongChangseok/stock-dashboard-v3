@@ -253,20 +253,21 @@ date,symbol,name,quantity,avgPrice,currentPrice,marketValue,unrealizedGain,unrea
 - **Prettier 설정**: 코드 포맷팅 자동화
 - **TypeScript 설정**: strict mode 활성화
 - **Zustand Store 구조**:
+
   ```typescript
   interface PortfolioStore {
-    portfolioHistory: PortfolioSnapshot[];
-    targets: TargetAllocation[];
+    portfolioHistory: PortfolioSnapshot[]
+    targets: TargetAllocation[]
 
     // Actions
-    addPortfolioSnapshot: (snapshot: PortfolioSnapshot) => void;
-    updateCurrentHoldings: (holdings: Holding[]) => void;
-    setTargets: (targets: TargetAllocation[]) => void;
-    loadFromJson: (data: PortfolioData) => void;
-    exportToJson: () => PortfolioData;
-    exportToCsv: () => string;
-    importFromCsv: (csvData: string) => void;
-    calculateRebalancingSuggestions: () => RebalancingSuggestion[];
+    addPortfolioSnapshot: (snapshot: PortfolioSnapshot) => void
+    updateCurrentHoldings: (holdings: Holding[]) => void
+    setTargets: (targets: TargetAllocation[]) => void
+    loadFromJson: (data: PortfolioData) => void
+    exportToJson: () => PortfolioData
+    exportToCsv: () => string
+    importFromCsv: (csvData: string) => void
+    calculateRebalancingSuggestions: () => RebalancingSuggestion[]
   }
   ```
 
