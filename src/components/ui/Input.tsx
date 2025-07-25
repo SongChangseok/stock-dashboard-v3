@@ -87,7 +87,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               {rightIcon}
             </div>
           )}
-          {/* 포커스 상태를 나타내는 글로우 효과 */}
+          {/* Glow effect indicating focus state */}
           <div
             className="absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"
             style={{ backgroundColor: 'color-mix(in srgb, var(--primary) 5%, transparent)' }}

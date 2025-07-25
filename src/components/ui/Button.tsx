@@ -38,7 +38,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button className={classes} ref={ref} disabled={isDisabled} {...props}>
-        {/* 로딩 애니메이션을 위한 배경 효과 */}
+        {/* Background effect for loading animation */}
         <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" />
 
         {loading && (

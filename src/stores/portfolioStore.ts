@@ -298,7 +298,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
       // Data management actions
       loadFromJson: data => {
         if (!validatePortfolioData(data)) {
-          throw new Error('유효하지 않은 포트폴리오 데이터입니다.')
+          throw new Error('Invalid portfolio data.')
         }
 
         set({
@@ -336,7 +336,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
           }))
         } catch (error) {
           const errorMessage =
-            error instanceof Error ? error.message : 'CSV 가져오기 중 오류가 발생했습니다.'
+            error instanceof Error ? error.message : 'An error occurred while importing CSV.'
           get().setError(errorMessage)
           throw error
         } finally {

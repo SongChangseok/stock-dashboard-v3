@@ -55,7 +55,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
           aria-valuemax={max}
           aria-label={label || `Progress: ${Math.round(percentage)}%`}
         >
-          {/* 광택 효과 */}
+          {/* Glossy effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
         </div>
       </div>

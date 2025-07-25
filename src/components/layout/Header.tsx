@@ -7,9 +7,9 @@ const Header: React.FC = () => {
   const location = useLocation()
 
   const navItems = [
-    { path: '/holdings', label: '보유 현황' },
-    { path: '/portfolio', label: '포트폴리오 관리' },
-    { path: '/rebalancing', label: '리밸런싱' },
+    { path: '/holdings', label: 'Holdings' },
+    { path: '/portfolio', label: 'Portfolio Management' },
+    { path: '/rebalancing', label: 'Rebalancing' },
   ]
 
   const isActive = (path: string) => location.pathname === path

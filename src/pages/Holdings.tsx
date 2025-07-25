@@ -15,21 +15,21 @@ const Holdings: React.FC = () => {
       <div className="flex justify-between items-center">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            보유 현황
+            Holdings
           </h1>
           <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
-            현재 보유 중인 주식 현황을 관리하세요
+            Manage your current stock holdings status
           </p>
         </div>
         <Button className="flex items-center space-x-2" icon={<Plus className="h-4 w-4" />}>
-          <span>주식 추가</span>
+          <span>Add Stock</span>
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>보유 종목 수</CardTitle>
+            <CardTitle>Number of Holdings</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold counter-up" style={{ color: 'var(--primary)' }}>
@@ -40,7 +40,7 @@ const Holdings: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>총 평가액</CardTitle>
+            <CardTitle>Total Market Value</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold counter-up text-success">
@@ -55,7 +55,7 @@ const Holdings: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>총 손익</CardTitle>
+            <CardTitle>Total Gain/Loss</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-bold counter-up gain-neutral">-</p>
@@ -65,7 +65,7 @@ const Holdings: React.FC = () => {
 
       <Card className="animate-slide-in-bottom">
         <CardHeader>
-          <CardTitle>보유 주식 목록</CardTitle>
+          <CardTitle>Stock Holdings List</CardTitle>
         </CardHeader>
         <CardContent>
           {holdings.length === 0 ? (
@@ -74,13 +74,13 @@ const Holdings: React.FC = () => {
                 <Plus className="h-8 w-8" style={{ color: 'var(--primary)' }} />
               </div>
               <p className="text-lg mb-6" style={{ color: 'var(--muted-foreground)' }}>
-                보유 중인 주식이 없습니다
+                No stocks currently held
               </p>
-              <Button icon={<Plus className="h-4 w-4" />}>첫 번째 주식 추가하기</Button>
+              <Button icon={<Plus className="h-4 w-4" />}>Add Your First Stock</Button>
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400">주식 테이블 컴포넌트 개발 예정</p>
+              <p className="text-gray-500 dark:text-gray-400">Stock table component under development</p>
             </div>
           )}
         </CardContent>

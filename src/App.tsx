@@ -38,7 +38,7 @@ function App() {
       >
         <div className="text-center animate-fade-in-scale">
           <div className="relative mb-8">
-            {/* 메인 로딩 스피너 */}
+            {/* Main loading spinner */}
             <div
               className="animate-spin rounded-full h-16 w-16 border-4 border-transparent mx-auto"
               style={{
@@ -47,7 +47,7 @@ function App() {
                 boxShadow: 'var(--shadow-lg)',
               }}
             />
-            {/* 펄스 링 */}
+            {/* Pulse ring */}
             <div
               className="absolute inset-0 rounded-full animate-ping opacity-20"
               style={{ backgroundColor: 'var(--primary)' }}
@@ -57,7 +57,7 @@ function App() {
             Portfolio Dashboard
           </h2>
           <p className="text-lg animate-pulse" style={{ color: 'var(--muted-foreground)' }}>
-            포트폴리오를 불러오는 중...
+            Loading portfolio...
           </p>
         </div>
       </div>

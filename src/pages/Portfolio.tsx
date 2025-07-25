@@ -14,14 +14,14 @@ const Portfolio: React.FC = () => {
       <div className="flex justify-between items-center">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            포트폴리오 관리
+            Portfolio Management
           </h1>
           <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
-            목표 포트폴리오 비중을 설정하고 관리하세요
+            Set and manage your target portfolio allocation
           </p>
         </div>
         <Button className="flex items-center space-x-2" icon={<Settings className="h-4 w-4" />}>
-          <span>목표 비중 설정</span>
+          <span>Set Target Allocation</span>
         </Button>
       </div>
 
@@ -30,18 +30,18 @@ const Portfolio: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="h-5 w-5" />
-              <span>목표 비중</span>
+              <span>Target Allocation</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {targets.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
-                  목표 비중이 설정되지 않았습니다
+                  No target allocation has been set
                 </p>
                 <Button size="sm">
                   <Settings className="h-4 w-4 mr-2" />
-                  목표 비중 설정하기
+                  Set Target Allocation
                 </Button>
               </div>
             ) : (
@@ -61,12 +61,12 @@ const Portfolio: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>현재 비중</CardTitle>
+            <CardTitle>Current Allocation</CardTitle>
           </CardHeader>
           <CardContent>
             {Object.keys(currentWeights).length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">보유 주식이 없습니다</p>
+                <p className="text-gray-500 dark:text-gray-400">No stocks currently held</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -86,11 +86,11 @@ const Portfolio: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>비중 비교 차트</CardTitle>
+          <CardTitle>Allocation Comparison Chart</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-gray-500 dark:text-gray-400">비교 차트 컴포넌트 개발 예정</p>
+            <p className="text-gray-500 dark:text-gray-400">Comparison chart component under development</p>
           </div>
         </CardContent>
       </Card>

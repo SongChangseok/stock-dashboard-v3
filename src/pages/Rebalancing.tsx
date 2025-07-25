@@ -15,14 +15,14 @@ const Rebalancing: React.FC = () => {
       <div className="flex justify-between items-center">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            리밸런싱 관리
+            Rebalancing Management
           </h1>
           <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
-            포트폴리오 리밸런싱 제안을 확인하세요
+            Review portfolio rebalancing suggestions
           </p>
         </div>
         <Button className="flex items-center space-x-2" icon={<Shuffle className="h-4 w-4" />}>
-          <span>리밸런싱 시뮬레이션</span>
+          <span>Rebalancing Simulation</span>
         </Button>
       </div>
 
@@ -33,7 +33,7 @@ const Rebalancing: React.FC = () => {
               <AlertTriangle
                 className={`h-5 w-5 ${needsRebalancing ? 'text-orange-500' : 'text-green-500'}`}
               />
-              <span>리밸런싱 상태</span>
+              <span>Rebalancing Status</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -41,12 +41,12 @@ const Rebalancing: React.FC = () => {
               <p
                 className={`text-2xl font-bold mb-2 ${needsRebalancing ? 'text-orange-600' : 'text-green-600'}`}
               >
-                {needsRebalancing ? '조정 필요' : '균형 상태'}
+                {needsRebalancing ? 'Adjustment Needed' : 'Balanced'}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {needsRebalancing
-                  ? `${suggestions.length}개 종목이 5% 이상 벗어남`
-                  : '모든 종목이 목표 비중 내에 있습니다'}
+                  ? `${suggestions.length} stocks deviate by more than 5%`
+                  : 'All stocks are within target allocation range'}
               </p>
             </div>
           </CardContent>
@@ -54,7 +54,7 @@ const Rebalancing: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>임계값 설정</CardTitle>
+            <CardTitle>Threshold Settings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center">
@@ -62,7 +62,7 @@ const Rebalancing: React.FC = () => {
                 5%
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                현재 고정 임계값으로 설정됨
+                Currently set as fixed threshold
               </p>
             </div>
           </CardContent>
@@ -71,21 +71,21 @@ const Rebalancing: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>리밸런싱 제안</CardTitle>
+          <CardTitle>Rebalancing Suggestions</CardTitle>
         </CardHeader>
         <CardContent>
           {suggestions.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                현재 리밸런싱이 필요한 종목이 없습니다
+                No stocks currently require rebalancing
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                모든 종목이 목표 비중의 ±5% 범위 내에 있습니다
+                All stocks are within ±5% of target allocation
               </p>
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400">리밸런싱 제안 테이블 개발 예정</p>
+              <p className="text-gray-500 dark:text-gray-400">Rebalancing suggestions table under development</p>
             </div>
           )}
         </CardContent>

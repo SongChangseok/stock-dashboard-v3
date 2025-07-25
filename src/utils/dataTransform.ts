@@ -54,7 +54,7 @@ export const portfolioToCsv = (data: PortfolioData): string => {
 export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
   const lines = csvString.trim().split('\n')
   if (lines.length < 2) {
-    throw new Error('CSV 파일이 올바르지 않습니다.')
+    throw new Error('CSV file is not valid.')
   }
 
   const headers = lines[0].split(',')
@@ -75,7 +75,7 @@ export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
   // 헤더 검증
   const missingHeaders = expectedHeaders.filter(header => !headers.includes(header))
   if (missingHeaders.length > 0) {
-    throw new Error(`필수 헤더가 누락되었습니다: ${missingHeaders.join(', ')}`)
+    throw new Error(`Required headers are missing: ${missingHeaders.join(', ')}`)
   }
 
   const csvRows: CSVRow[] = []
@@ -83,7 +83,7 @@ export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(',')
     if (values.length !== headers.length) {
-      console.warn(`Row ${i + 1}: 컬럼 수가 일치하지 않습니다. 건너뛰는 중...`)
+      console.warn(`Row ${i + 1}: Column count mismatch. Skipping...`)
       continue
     }
 
@@ -257,23 +257,23 @@ export const validateHoldingFormData = (data: HoldingFormData): string[] => {
   const errors: string[] = []
 
   if (!data.symbol?.trim()) {
-    errors.push('종목 코드를 입력해주세요.')
+    errors.push('Please enter stock symbol.')
   }
 
   if (!data.name?.trim()) {
-    errors.push('종목명을 입력해주세요.')
+    errors.push('Please enter stock name.')
   }
 
   if (!data.quantity || data.quantity <= 0) {
-    errors.push('보유 수량은 0보다 커야 합니다.')
+    errors.push('Quantity must be greater than 0.')
   }
 
   if (!data.avgPrice || data.avgPrice <= 0) {
-    errors.push('평균 매수가는 0보다 커야 합니다.')
+    errors.push('Average price must be greater than 0.')
   }
 
   if (!data.currentPrice || data.currentPrice <= 0) {
-    errors.push('현재가는 0보다 커야 합니다.')
+    errors.push('Current price must be greater than 0.')
   }
 
   return errors
@@ -290,10 +290,10 @@ export const readFileAsText = (file: File): Promise<string> => {
       if (typeof result === 'string') {
         resolve(result)
       } else {
-        reject(new Error('파일을 읽을 수 없습니다.'))
+        reject(new Error('Cannot read file.'))
       }
     }
-    reader.onerror = () => reject(new Error('파일 읽기 중 오류가 발생했습니다.'))
+    reader.onerror = () => reject(new Error('An error occurred while reading the file.'))
     reader.readAsText(file)
   })
 }
