@@ -62,16 +62,7 @@ export interface PerformanceMetrics {
   maxDrawdown: number
 }
 
-// 차트 데이터
-export interface ChartDataPoint {
-  date: string
-  value: number
-  label?: string
-}
-
 // UI 상태 타입
-export type LoadingState = 'idle' | 'loading' | 'success' | 'error'
-
 export interface UIState {
   isLoading: boolean
   error: string | null
@@ -85,6 +76,23 @@ export interface HoldingFormData {
   quantity: number
   avgPrice: number
   currentPrice: number
+}
+
+export interface TargetAllocationFormData {
+  symbol: string
+  targetWeight: number
+  tag: string
+}
+
+export type HoldingsTableViewMode = 'full' | 'allocation'
+
+export interface AllocationInfo {
+  symbol: string
+  currentWeight: number
+  targetWeight?: number
+  hasTarget: boolean
+  needsRebalancing: boolean
+  status: 'onTarget' | 'rebalance' | 'noTarget'
 }
 
 export interface ModalProps {

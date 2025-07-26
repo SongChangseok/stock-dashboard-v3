@@ -1,6 +1,6 @@
 import React from 'react'
 import { TrendingUp, TrendingDown, DollarSign, PieChart } from 'lucide-react'
-import { Card, CardHeader, CardContent, CardTitle } from '../ui/Card'
+import { Card, CardHeader, CardContent } from '../ui/Card'
 
 interface PortfolioSummaryProps {
   totalValue: number
@@ -12,7 +12,6 @@ interface PortfolioSummaryProps {
 const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
   totalValue,
   totalGain,
-  totalGainPercent,
   totalPositions,
 }) => {
   const formatCurrency = (value: number) => {
@@ -61,7 +60,7 @@ const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Portfolio Summary</h2>
+        <h2 className="text-2xl font-semibold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Portfolio Summary</h2>
         <div className="text-sm opacity-70">
           {totalPositions} {totalPositions === 1 ? 'position' : 'positions'}
         </div>
@@ -71,9 +70,9 @@ const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
         {summaryItems.map((item, index) => (
           <Card key={index} className="relative overflow-hidden">
             <CardHeader className="pb-1">
-              <CardTitle className="text-sm font-medium opacity-70">
+              <div className="text-sm font-medium opacity-70">
                 {item.title}
-              </CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="pt-1">
               <div

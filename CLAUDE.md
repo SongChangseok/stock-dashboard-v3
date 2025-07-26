@@ -61,25 +61,6 @@ npm run preview    # Preview production build
 - **Avoid excessive refactoring**: Modify working code only when necessary
 - **Prevent duplicate type definitions**: Maximize use of existing types in `src/types/portfolio.ts`
 
-### Consistency Requirements
-
-- **Terminology Consistency**: ALWAYS use standardized financial terms consistently across all components
-  - Use "Position" instead of "Stock" for individual holdings
-  - Use "Holdings" for the collection of all positions
-  - Use financial industry standard terms: "Market Value", "Cost Basis", "P&L", "Unrealized Gain/Loss"
-  - Maintain consistent labeling patterns (e.g., "Total" prefix for summary metrics)
-
-- **Design System Consistency**: ALWAYS maintain uniform design patterns
-  - Use predefined CSS classes from `src/index.css` (`.btn`, `.btn-primary`, `.btn-secondary`, etc.)
-  - Apply consistent color coding: green (`var(--success)`) for gains, red (`var(--error)`) for losses
-  - Use uniform spacing, padding, and card layouts following existing Card component patterns
-  - Maintain consistent button sizes, hover states, and interaction feedback
-
-- **Component Pattern Consistency**: ALWAYS follow established architectural patterns
-  - Use Zustand store actions for all state management
-  - Follow existing component composition patterns (CardHeader, CardContent, CardTitle)
-  - Maintain consistent prop naming and component interfaces
-  - Apply uniform error handling and loading state patterns
 
 ## Page Structure and Features
 
@@ -236,22 +217,292 @@ Core financial calculation functions:
 
 ### ⚠️ MANDATORY CONSISTENCY RULES
 
-**Before implementing ANY new feature, ALWAYS:**
+**Before implementing ANY new feature, ALWAYS follow the comprehensive consistency framework below:**
 
-1. **Terminology Check**: Review existing components to ensure consistent use of financial terms
-   - "Position" not "Stock" for individual holdings
-   - "Holdings" for collections of positions  
-   - Standard financial terms: "Market Value", "Cost Basis", "P&L", "Unrealized Gain/Loss"
+## 🎯 **PRODUCT CONSISTENCY FRAMEWORK**
 
-2. **Design Pattern Check**: Follow established UI patterns
-   - Use `.btn`, `.btn-primary`, `.btn-secondary` classes
-   - Apply consistent color coding: green for gains, red for losses
-   - Follow Card component structure: CardHeader, CardContent, CardTitle
+### **1. 📝 TERMINOLOGY CONSISTENCY**
+**Financial Terms - ALWAYS use these exact terms:**
+- ✅ "Position" (not "Stock") for individual holdings
+- ✅ "Holdings" for collections of positions
+- ✅ "Market Value" (not "Current Value")
+- ✅ "Cost Basis" (not "Purchase Price")
+- ✅ "Unrealized P&L" (not "Profit/Loss")
+- ✅ "Portfolio" for the entire collection
+- ✅ "Target Allocation" (not "Target Weight")
 
-3. **Component Structure Check**: Maintain architectural consistency
-   - Use Zustand store actions for state management
-   - Follow existing prop naming conventions
-   - Apply uniform error handling and loading states
+**UI Terminology - Consistent labeling patterns:**
+- ✅ "Total" prefix for summary metrics
+- ✅ "Add Position" / "Edit Position" / "Delete Position"
+- ✅ "Holdings Table" / "Portfolio Summary"
+- ✅ Action buttons: "Edit" / "Delete" (not "Update" / "Remove")
+
+### **2. 🎨 DESIGN SYSTEM CONSISTENCY**
+
+**Typography Hierarchy:**
+```css
+/* Page Titles */
+h1: text-3xl font-bold + gradient (bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent)
+
+/* Section Titles */  
+h2: text-2xl font-semibold
+
+/* Card Titles */
+CardTitle: text-xl font-bold + gradient (built-in)
+
+/* Subsection Titles */
+h3: text-lg font-medium
+
+/* Body Text */
+p: text-base (default)
+
+/* Small Text */
+small: text-sm opacity-70
+```
+
+**Color Usage - ALWAYS use CSS variables:**
+```css
+/* Primary Colors */
+--primary: #2563EB (buttons, links, accents)
+--success: #10B981 (gains, positive values)
+--error: #EF4444 (losses, negative values, warnings)
+--warning: #F59E0B (attention, caution)
+
+/* Backgrounds */
+--background: main background
+--background-secondary: secondary areas
+--muted: subtle backgrounds
+--muted-foreground: subtle text
+
+/* Interactive Elements */
+hover:bg-blue-50 dark:hover:bg-blue-900/20 (edit actions)
+hover:bg-red-50 dark:hover:bg-red-900/20 (delete actions)
+```
+
+**Button System - ALWAYS use these patterns:**
+```tsx
+/* Primary Actions */
+<button className="btn btn-primary">
+  <Icon className="h-4 w-4" />
+  Action Text
+</button>
+
+/* Secondary Actions */
+<button className="btn btn-secondary">
+  <Icon className="h-4 w-4" />
+  Action Text
+</button>
+
+/* Action Buttons (tables/grids) */
+<button className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed">
+  <Edit className="h-4 w-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
+</button>
+```
+
+**Icon Standards:**
+- ✅ Edit actions: `Edit` (not `Edit2`)
+- ✅ Delete actions: `Trash2`
+- ✅ Add actions: `Plus`
+- ✅ Settings: `Settings`
+- ✅ Icon size: `h-4 w-4` (16px) for buttons, `h-5 w-5` (20px) for titles
+
+### **3. 🏗️ COMPONENT ARCHITECTURE CONSISTENCY**
+
+**Card Structure - ALWAYS follow this pattern:**
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle className="flex items-center gap-2">
+      <Icon className="h-5 w-5" />
+      Title Text
+    </CardTitle>
+  </CardHeader>
+  <CardContent>
+    {/* Content */}
+  </CardContent>
+</Card>
+```
+
+**Modal Pattern - ALWAYS use consistent structure:**
+```tsx
+<Modal isOpen={isOpen} onClose={onClose} title="Action Title" size="md">
+  <form onSubmit={handleSubmit} className="space-y-4">
+    {/* Form fields */}
+    <div className="flex justify-end gap-3 pt-4">
+      <button type="button" className="btn btn-secondary">
+        <X className="h-4 w-4" />
+        Cancel
+      </button>
+      <button type="submit" className="btn btn-primary">
+        <Save className="h-4 w-4" />
+        Save Action
+      </button>
+    </div>
+  </form>
+</Modal>
+```
+
+**Page Layout Pattern:**
+```tsx
+<div className="space-y-6 animate-fade-in-scale">
+  {/* Page Header */}
+  <div className="flex justify-between items-center">
+    <div className="space-y-1">
+      <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+        Page Title
+      </h1>
+      <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
+        Page description
+      </p>
+    </div>
+    <button className="btn btn-primary">
+      <Plus className="h-4 w-4" />
+      Primary Action
+    </button>
+  </div>
+  
+  {/* Content */}
+</div>
+```
+
+### **4. 💻 CODE PATTERN CONSISTENCY**
+
+**State Management - ALWAYS use Zustand patterns:**
+```tsx
+const { 
+  // Computed getters
+  getCurrentHoldings,
+  getTotalValue,
+  // Actions
+  addHolding,
+  updateHolding,
+  deleteHolding,
+  // UI state
+  ui,
+  setLoading,
+  setError
+} = usePortfolioStore()
+```
+
+**Error Handling - ALWAYS follow this pattern:**
+```tsx
+const handleAction = async () => {
+  try {
+    setLoading(true)
+    await performAction()
+  } catch (error) {
+    setError('Action failed')
+  } finally {
+    setLoading(false)
+  }
+}
+```
+
+**Form Validation - ALWAYS use consistent patterns:**
+```tsx
+const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
+
+const validateForm = (): boolean => {
+  const newErrors: Partial<Record<keyof FormData, string>> = {}
+  
+  if (!formData.field) {
+    newErrors.field = 'Field is required'
+  }
+  
+  setErrors(newErrors)
+  return Object.keys(newErrors).length === 0
+}
+```
+
+### **5. 🎨 STYLING CONSISTENCY**
+
+**ALWAYS prefer CSS variables over hardcoded values:**
+```tsx
+// ✅ Correct
+style={{ color: 'var(--success)' }}
+style={{ backgroundColor: 'var(--muted)' }}
+
+// ❌ Avoid
+className="text-green-600"
+style={{ color: '#10B981' }}
+```
+
+**Loading States - ALWAYS use consistent patterns:**
+```tsx
+{ui.isLoading && (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+  </div>
+)}
+```
+
+**Grid Layouts - ALWAYS use responsive patterns:**
+```tsx
+/* 2-column responsive */
+className="grid grid-cols-1 md:grid-cols-2 gap-6"
+
+/* 4-column responsive */  
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+
+/* 3-column with priority */
+className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+```
+
+### **6. 🔧 DEVELOPMENT WORKFLOW CONSISTENCY**
+
+**File Naming - ALWAYS use PascalCase:**
+- Components: `ComponentName.tsx`
+- Pages: `PageName.tsx`
+- Utilities: `utilityName.ts`
+- Types: `typeName.ts`
+
+**Import Organization - ALWAYS group in this order:**
+```tsx
+// 1. React and external libraries
+import React from 'react'
+import { SomeIcon } from 'lucide-react'
+
+// 2. Internal hooks and stores
+import { usePortfolioStore } from '../stores/portfolioStore'
+
+// 3. Components (UI first, then feature-specific)
+import { Card, CardHeader, CardContent } from '../ui/Card'
+import ComponentName from '../components/ComponentName'
+
+// 4. Types
+import type { TypeName } from '../types/portfolio'
+```
+
+**Component Props - ALWAYS use consistent patterns:**
+```tsx
+interface ComponentNameProps {
+  // Data props first
+  data: DataType[]
+  
+  // Event handlers
+  onAction: (param: Type) => void
+  
+  // Optional configurations
+  isLoading?: boolean
+  className?: string
+}
+```
+
+## 🚨 **CONSISTENCY CHECKLIST**
+
+Before submitting any code, verify:
+- [ ] **Terminology**: All financial terms follow the standard
+- [ ] **Typography**: Headings use the correct hierarchy
+- [ ] **Colors**: All colors use CSS variables
+- [ ] **Buttons**: Follow the established button patterns
+- [ ] **Icons**: Use consistent icon types and sizes
+- [ ] **Layout**: Page/component structure matches patterns
+- [ ] **State**: Zustand store usage is consistent
+- [ ] **Error Handling**: Follows the standard pattern
+- [ ] **Styling**: CSS variables over hardcoded values
+- [ ] **Loading States**: Consistent loading indicators
+- [ ] **File Names**: PascalCase naming convention
+- [ ] **Imports**: Proper organization and grouping
 
 ### Type-First Development Pattern
 

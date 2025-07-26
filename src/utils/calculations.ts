@@ -244,7 +244,7 @@ export const formatCurrency = (value: number, currency = 'KRW'): string => {
 /**
  * 백분율 포맷팅
  */
-export const formatPercent = (value: number, decimals = 2): string => {
+export const formatPercent = (value: number, decimals = 1): string => {
   return `${value.toFixed(decimals)}%`
 }
 
