@@ -12,7 +12,7 @@ const Layout: React.FC = () => {
       <Header />
 
       <div className="flex">
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-3 sm:p-4 md:p-6">
           <div className="max-w-7xl mx-auto">
             <Routes>
               <Route path="/" element={<Navigate to="/holdings" replace />} />

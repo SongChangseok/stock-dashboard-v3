@@ -106,6 +106,7 @@ const TargetAllocationTable: React.FC<TargetAllocationTableProps> = ({
         searchable
         searchPlaceholder="Search targets..."
         className="target-allocation-table"
+        mobileCardView={true}
       />
 
       {/* Total Summary */}

@@ -9,13 +9,17 @@ import type { RebalancingSuggestion } from '../../types/portfolio'
 interface RebalancingSuggestionsProps {
   suggestions: RebalancingSuggestion[]
   isLoading?: boolean
-  onSimulate?: () => void
+  simulationState: 'hidden' | 'shown' | 'running'
+  onToggleSimulation?: () => void
+  onRunSimulation?: () => void
 }
 
 export const RebalancingSuggestions: React.FC<RebalancingSuggestionsProps> = ({
   suggestions,
   isLoading = false,
-  onSimulate,
+  simulationState,
+  onToggleSimulation,
+  onRunSimulation,
 }) => {
   if (isLoading) {
     return (
@@ -190,17 +194,32 @@ export const RebalancingSuggestions: React.FC<RebalancingSuggestionsProps> = ({
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               Rebalancing Actions
             </h3>
-            {onSimulate && (
-              <Button variant="secondary" onClick={onSimulate}>
-                Run Simulation
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {simulationState === 'hidden' && onToggleSimulation && (
+                <Button variant="primary" onClick={onToggleSimulation}>
+                  <BarChart3 className="h-4 w-4" />
+                  Simulate Changes
+                </Button>
+              )}
+              {simulationState === 'shown' && onRunSimulation && (
+                <Button variant="primary" onClick={onRunSimulation}>
+                  <TrendingUp className="h-4 w-4" />
+                  Run Simulation
+                </Button>
+              )}
+              {simulationState !== 'hidden' && onToggleSimulation && (
+                <Button variant="secondary" onClick={onToggleSimulation}>
+                  Hide Simulation
+                </Button>
+              )}
+            </div>
           </div>
           
           <Table
             data={suggestions}
             columns={columns}
             className="border-0"
+            mobileCardView={true}
           />
         </div>
 

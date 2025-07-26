@@ -1,17 +1,33 @@
 import React, { useState } from 'react'
-import { Shuffle, AlertTriangle } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 import { usePortfolioStore } from '../stores/portfolioStore'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
 import RebalancingSuggestions from '../components/portfolio/RebalancingSuggestions'
 import RebalancingSimulation from '../components/portfolio/RebalancingSimulation'
 
 const Rebalancing: React.FC = () => {
-  const { getRebalancingSuggestions, getCurrentHoldings, ui } = usePortfolioStore()
-  const [showSimulation, setShowSimulation] = useState(false)
+  const { getRebalancingSuggestions, holdings, targets, ui } = usePortfolioStore()
+  const [simulationState, setSimulationState] = useState<'hidden' | 'shown' | 'running'>('hidden')
 
   const suggestions = getRebalancingSuggestions()
-  const currentHoldings = getCurrentHoldings()
+  const currentHoldings = holdings
   const needsRebalancing = suggestions.length > 0
+
+  const handleSimulationToggle = () => {
+    if (simulationState === 'hidden') {
+      setSimulationState('shown')
+    } else {
+      setSimulationState('hidden')
+    }
+  }
+
+  const handleRunSimulation = () => {
+    setSimulationState('running')
+  }
+
+  const handleResetSimulation = () => {
+    setSimulationState('shown')
+  }
 
   return (
     <div className="space-y-6 animate-fade-in-scale">
@@ -24,14 +40,6 @@ const Rebalancing: React.FC = () => {
             Review portfolio rebalancing suggestions
           </p>
         </div>
-        <button 
-          className="btn btn-primary"
-          onClick={() => setShowSimulation(!showSimulation)}
-          disabled={suggestions.length === 0}
-        >
-          <Shuffle className="h-4 w-4" />
-          {showSimulation ? 'Hide Simulation' : 'Show Simulation'}
-        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -56,6 +64,14 @@ const Rebalancing: React.FC = () => {
                   ? `${suggestions.length} positions deviate by more than 5%`
                   : 'All positions are within target allocation range'}
               </p>
+              {/* Debug info */}
+              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                  <div>Holdings: {currentHoldings.length}</div>
+                  <div>Targets: {targets.length}</div>
+                  <div>Suggestions: {suggestions.length}</div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -80,14 +96,19 @@ const Rebalancing: React.FC = () => {
       <RebalancingSuggestions
         suggestions={suggestions}
         isLoading={ui.isLoading}
-        onSimulate={() => setShowSimulation(true)}
+        simulationState={simulationState}
+        onToggleSimulation={handleSimulationToggle}
+        onRunSimulation={handleRunSimulation}
       />
 
-      {showSimulation && (
+      {simulationState !== 'hidden' && (
         <RebalancingSimulation
           suggestions={suggestions}
           currentHoldings={currentHoldings}
           isLoading={ui.isLoading}
+          simulationState={simulationState}
+          onRunSimulation={handleRunSimulation}
+          onResetSimulation={handleResetSimulation}
         />
       )}
     </div>

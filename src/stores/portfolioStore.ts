@@ -1,13 +1,10 @@
 import { create } from 'zustand'
 import { devtools, subscribeWithSelector } from 'zustand/middleware'
 import type {
-  PortfolioData,
-  PortfolioSnapshot,
   Holding,
   TargetAllocation,
   RebalancingSuggestion,
   Settings,
-  PerformanceMetrics,
   UIState,
   HoldingFormData,
 } from '../types/portfolio'
@@ -15,38 +12,29 @@ import {
   calculatePortfolioTotals,
   calculateWeights,
   generateRebalancingSuggestions,
-  calculatePerformanceMetrics,
 } from '../utils/calculations'
 import {
   formDataToHolding,
   getCurrentISODate,
   generateId,
-  portfolioToCsv,
-  csvToPortfolio,
-  validatePortfolioData,
-  getErrorMessage,
 } from '../utils/dataTransform'
 
 interface PortfolioStore {
   // State
-  portfolioHistory: PortfolioSnapshot[]
+  holdings: Holding[]
   targets: TargetAllocation[]
   settings: Settings
   ui: UIState
 
   // Computed getters
-  getCurrentSnapshot: () => PortfolioSnapshot | null
-  getCurrentHoldings: () => Holding[]
   getTotalValue: () => number
   getTotalGain: () => number
   getTotalGainPercent: () => number
   getCurrentWeights: () => Record<string, number>
   getRebalancingSuggestions: () => RebalancingSuggestion[]
-  getPerformanceMetrics: (period?: '1M' | '3M' | '1Y' | 'ALL') => PerformanceMetrics
 
   // Portfolio management actions
-  addPortfolioSnapshot: (snapshot: PortfolioSnapshot) => void
-  updateCurrentHoldings: (holdings: Holding[]) => void
+  setHoldings: (holdings: Holding[]) => void
   addHolding: (formData: HoldingFormData) => void
   updateHolding: (id: string, formData: HoldingFormData) => void
   deleteHolding: (id: string) => void
@@ -66,18 +54,11 @@ interface PortfolioStore {
   setUIState: (ui: Partial<UIState>) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
-  setSelectedPeriod: (period: '1M' | '3M' | '1Y' | 'ALL') => void
 
   // Data management actions
-  loadFromJson: (data: PortfolioData) => void
-  exportToJson: () => PortfolioData
-  exportToCsv: () => string
-  importFromCsv: (csvData: string) => Promise<void>
+  loadFromJson: (data: any) => void
+  exportToJson: () => any
   resetAllData: () => void
-  createSnapshot: () => void
-
-  // Utility actions
-  refreshCalculations: () => void
 }
 
 const initialSettings: Settings = {
@@ -88,121 +69,82 @@ const initialSettings: Settings = {
 const initialUIState: UIState = {
   isLoading: false,
   error: null,
-  selectedPeriod: 'ALL',
 }
 
 export const usePortfolioStore = create<PortfolioStore>()(
   devtools(
     subscribeWithSelector((set, get) => ({
       // Initial state
-      portfolioHistory: [],
+      holdings: [],
       targets: [],
       settings: initialSettings,
       ui: initialUIState,
 
       // Computed getters
-      getCurrentSnapshot: () => {
-        const { portfolioHistory } = get()
-        return portfolioHistory.length > 0 ? portfolioHistory[portfolioHistory.length - 1] : null
-      },
-
-      getCurrentHoldings: () => {
-        const currentSnapshot = get().getCurrentSnapshot()
-        return currentSnapshot?.holdings || []
-      },
-
       getTotalValue: () => {
-        const currentSnapshot = get().getCurrentSnapshot()
-        return currentSnapshot?.totalValue || 0
+        const { holdings } = get()
+        const { totalValue } = calculatePortfolioTotals(holdings)
+        return totalValue
       },
 
       getTotalGain: () => {
-        const currentSnapshot = get().getCurrentSnapshot()
-        return currentSnapshot?.totalGain || 0
+        const { holdings } = get()
+        const { totalGain } = calculatePortfolioTotals(holdings)
+        return totalGain
       },
 
       getTotalGainPercent: () => {
-        const currentSnapshot = get().getCurrentSnapshot()
-        return currentSnapshot?.totalGainPercent || 0
+        const { holdings } = get()
+        const { totalGainPercent } = calculatePortfolioTotals(holdings)
+        return totalGainPercent
       },
 
       getCurrentWeights: () => {
-        const holdings = get().getCurrentHoldings()
+        const { holdings } = get()
         return calculateWeights(holdings)
       },
 
       getRebalancingSuggestions: () => {
-        const holdings = get().getCurrentHoldings()
-        const targets = get().targets
+        const { holdings, targets } = get()
         return generateRebalancingSuggestions(holdings, targets)
       },
 
-      getPerformanceMetrics: (period = 'ALL') => {
-        const { portfolioHistory } = get()
-        return calculatePerformanceMetrics(portfolioHistory, period)
-      },
-
       // Portfolio management actions
-      addPortfolioSnapshot: snapshot =>
+      setHoldings: holdings =>
         set(state => ({
-          portfolioHistory: [...state.portfolioHistory, snapshot],
+          holdings,
           settings: { ...state.settings, lastUpdated: getCurrentISODate() },
         })),
 
-      updateCurrentHoldings: holdings =>
-        set(state => {
-          const { totalValue, totalGain, totalGainPercent } = calculatePortfolioTotals(holdings)
-
-          const newSnapshot: PortfolioSnapshot = {
-            date: getCurrentISODate(),
-            holdings,
-            totalValue,
-            totalGain,
-            totalGainPercent,
-          }
-
-          const updatedHistory = [...state.portfolioHistory]
-          if (updatedHistory.length > 0) {
-            updatedHistory[updatedHistory.length - 1] = newSnapshot
-          } else {
-            updatedHistory.push(newSnapshot)
-          }
-
-          return {
-            portfolioHistory: updatedHistory,
-            settings: { ...state.settings, lastUpdated: getCurrentISODate() },
-          }
-        }),
-
       addHolding: formData => {
-        const holdings = get().getCurrentHoldings()
+        const { holdings } = get()
         const newHolding: Holding = {
           ...formDataToHolding(formData),
           id: generateId(),
         }
 
         const updatedHoldings = [...holdings, newHolding]
-        get().updateCurrentHoldings(updatedHoldings)
+        get().setHoldings(updatedHoldings)
       },
 
       updateHolding: (id, formData) => {
-        const holdings = get().getCurrentHoldings()
+        const { holdings } = get()
         const updatedHoldings = holdings.map(holding =>
           holding.id === id ? { ...formDataToHolding(formData), id } : holding
         )
 
-        get().updateCurrentHoldings(updatedHoldings)
+        get().setHoldings(updatedHoldings)
       },
 
       deleteHolding: id => {
-        const holdings = get().getCurrentHoldings()
+        const { holdings } = get()
         const updatedHoldings = holdings.filter(holding => holding.id !== id)
 
-        get().updateCurrentHoldings(updatedHoldings)
+        get().setHoldings(updatedHoldings)
       },
 
       updateHoldingPrice: (id, newPrice) => {
-        const holdings = get().getCurrentHoldings()
+        const { holdings } = get()
         const updatedHoldings = holdings.map(holding => {
           if (holding.id === id) {
             const marketValue = holding.quantity * newPrice
@@ -221,7 +163,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
           return holding
         })
 
-        get().updateCurrentHoldings(updatedHoldings)
+        get().setHoldings(updatedHoldings)
       },
 
       // Target allocation actions
@@ -282,88 +224,32 @@ export const usePortfolioStore = create<PortfolioStore>()(
           ui: { ...state.ui, error },
         })),
 
-      setSelectedPeriod: period =>
-        set(state => ({
-          ui: { ...state.ui, selectedPeriod: period },
-        })),
-
-      // Data management actions
+      // Data management actions  
       loadFromJson: data => {
-        if (!validatePortfolioData(data)) {
-          throw new Error('Invalid portfolio data.')
-        }
-
         set({
-          portfolioHistory: data.portfolioHistory,
-          targets: data.targets,
+          holdings: data.holdings || [],
+          targets: data.targets || [],
           settings: { ...data.settings, lastUpdated: getCurrentISODate() },
         })
       },
 
       exportToJson: () => {
-        const { portfolioHistory, targets, settings } = get()
+        const { holdings, targets, settings } = get()
         return {
-          portfolioHistory,
+          holdings,
           targets,
           settings: { ...settings, lastUpdated: getCurrentISODate() },
         }
       },
 
-      exportToCsv: () => {
-        const data = get().exportToJson()
-        return portfolioToCsv(data)
-      },
-
-      importFromCsv: async csvData => {
-        try {
-          get().setLoading(true)
-          get().setError(null)
-
-          const parsedData = csvToPortfolio(csvData)
-
-          set(state => ({
-            portfolioHistory: parsedData.portfolioHistory || state.portfolioHistory,
-            targets: parsedData.targets || state.targets,
-            settings: { ...state.settings, lastUpdated: getCurrentISODate() },
-          }))
-        } catch (error) {
-          const errorMessage = getErrorMessage(error, 'An error occurred while importing CSV.')
-          get().setError(errorMessage)
-          throw error
-        } finally {
-          get().setLoading(false)
-        }
-      },
-
       resetAllData: () =>
         set({
-          portfolioHistory: [],
+          holdings: [],
           targets: [],
           settings: { ...initialSettings, lastUpdated: getCurrentISODate() },
           ui: initialUIState,
         }),
 
-      createSnapshot: () => {
-        const holdings = get().getCurrentHoldings()
-        if (holdings.length === 0) return
-
-        const { totalValue, totalGain, totalGainPercent } = calculatePortfolioTotals(holdings)
-
-        const snapshot: PortfolioSnapshot = {
-          date: getCurrentISODate(),
-          holdings: [...holdings],
-          totalValue,
-          totalGain,
-          totalGainPercent,
-        }
-
-        get().addPortfolioSnapshot(snapshot)
-      },
-
-      refreshCalculations: () => {
-        const holdings = get().getCurrentHoldings()
-        get().updateCurrentHoldings(holdings)
-      },
     })),
     {
       name: 'portfolio-store',
@@ -375,7 +261,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
 export const subscribeToStore = () => {
   return usePortfolioStore.subscribe(
     state => ({
-      portfolioHistory: state.portfolioHistory,
+      holdings: state.holdings,
       targets: state.targets,
       settings: state.settings,
     }),
@@ -395,10 +281,8 @@ export const loadFromLocalStorage = () => {
     const storedData = localStorage.getItem('portfolio-data')
     if (storedData) {
       const parsedData = JSON.parse(storedData)
-      if (validatePortfolioData(parsedData)) {
-        usePortfolioStore.getState().loadFromJson(parsedData)
-        return true
-      }
+      usePortfolioStore.getState().loadFromJson(parsedData)
+      return true
     }
   } catch (error) {
     console.error('Failed to load from localStorage:', error)

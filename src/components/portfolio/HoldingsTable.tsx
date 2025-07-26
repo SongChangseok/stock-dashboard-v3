@@ -13,7 +13,7 @@ interface HoldingsTableProps {
   showTitle?: boolean
 }
 
-const HoldingsTable: React.FC<HoldingsTableProps> = ({
+const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
   holdings,
   viewMode = 'full',
   targets = [],
@@ -23,22 +23,22 @@ const HoldingsTable: React.FC<HoldingsTableProps> = ({
   showTitle = true,
 }) => {
 
-  const formatColoredPercent = (value: number) => {
+  const formatColoredPercent = React.useCallback((value: number) => {
     const isPositive = value >= 0
     return (
       <span style={{ color: isPositive ? 'var(--success)' : 'var(--error)' }}>
         {Math.abs(value).toFixed(2)}%
       </span>
     )
-  }
+  }, [])
 
-  const handlePriceUpdate = (holding: Holding) => {
+  const handlePriceUpdate = React.useCallback((holding: Holding) => {
     if (!onUpdatePrice) return
     const newPrice = prompt(`Update current price for ${holding.symbol}`, holding.currentPrice.toString())
     if (newPrice && !isNaN(Number(newPrice)) && Number(newPrice) > 0) {
       onUpdatePrice(holding.id, Number(newPrice))
     }
-  }
+  }, [onUpdatePrice])
 
   // Calculate allocation information
   const totalValue = holdings.reduce((sum, holding) => sum + holding.marketValue, 0)
@@ -263,9 +263,12 @@ const HoldingsTable: React.FC<HoldingsTableProps> = ({
         searchable
         searchPlaceholder="Search positions..."
         className="holdings-table"
+        mobileCardView={true}
       />
     </div>
   )
-}
+})
+
+HoldingsTable.displayName = 'HoldingsTable'
 
 export default HoldingsTable

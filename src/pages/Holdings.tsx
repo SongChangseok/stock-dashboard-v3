@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, PieChart as PieChartIcon, BarChart3 } from 'lucide-react'
 import { usePortfolioStore } from '../stores/portfolioStore'
 import HoldingsTable from '../components/portfolio/HoldingsTable'
 import PortfolioSummary from '../components/portfolio/PortfolioSummary'
 import StockModal from '../components/portfolio/StockModal'
 import PieChart from '../components/charts/PieChart'
+import CollapsibleSection from '../components/ui/CollapsibleSection'
+import useMobileOptimization from '../hooks/useMobileOptimization'
 import type { Holding, HoldingFormData } from '../types/portfolio'
 
 const Holdings: React.FC = () => {
   const {
-    getCurrentHoldings,
+    holdings,
     getTotalValue,
     getTotalGain,
     getTotalGainPercent,
@@ -23,8 +25,7 @@ const Holdings: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingPosition, setEditingPosition] = useState<Holding | null>(null)
-
-  const holdings = getCurrentHoldings()
+  const { compactMode } = useMobileOptimization()
   const totalValue = getTotalValue()
   const totalGain = getTotalGain()
   const totalGainPercent = getTotalGainPercent()
@@ -77,23 +78,25 @@ const Holdings: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in-scale">
+    <div className={`animate-fade-in-scale ${compactMode ? 'space-y-3' : 'space-y-6'}`}>
       <div className="flex justify-between items-center">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+          <h1 className={`font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent ${compactMode ? 'text-2xl' : 'text-3xl'}`}>
             Holdings
           </h1>
-          <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
-            Manage your portfolio positions and track performance
-          </p>
+          {!compactMode && (
+            <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
+              Manage your portfolio positions and track performance
+            </p>
+          )}
         </div>
         <button
           onClick={handleAddPosition}
           disabled={ui.isLoading}
-          className="btn btn-primary"
+          className={`btn btn-primary ${compactMode ? 'text-sm px-3 py-2' : ''}`}
         >
           <Plus className="h-4 w-4" />
-          Add Position
+          {compactMode ? 'Add' : 'Add Position'}
         </button>
       </div>
 
@@ -110,42 +113,87 @@ const Holdings: React.FC = () => {
         </div>
       )}
 
-      <PortfolioSummary
-        totalValue={totalValue}
-        totalGain={totalGain}
-        totalGainPercent={totalGainPercent}
-        totalPositions={holdings.length}
-      />
-
       {holdings.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 flex items-center justify-center">
-            <Plus className="h-10 w-10" style={{ color: 'var(--primary)' }} />
+        <div className={`text-center ${compactMode ? 'py-8' : 'py-16'}`}>
+          <div className={`mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 flex items-center justify-center ${compactMode ? 'w-16 h-16 mb-3' : 'w-20 h-20 mb-6'}`}>
+            <Plus className={`${compactMode ? 'h-8 w-8' : 'h-10 w-10'}`} style={{ color: 'var(--primary)' }} />
           </div>
-          <h3 className="text-xl font-semibold mb-2">No positions in your portfolio</h3>
-          <p className="text-lg mb-8" style={{ color: 'var(--muted-foreground)' }}>
+          <h3 className={`font-semibold mb-2 ${compactMode ? 'text-lg' : 'text-xl'}`}>No positions in your portfolio</h3>
+          <p className={`mb-6 ${compactMode ? 'text-base mb-4' : 'text-lg mb-8'}`} style={{ color: 'var(--muted-foreground)' }}>
             Add your first position to start tracking your portfolio performance
           </p>
           <button
             onClick={handleAddPosition}
-            className="btn btn-primary text-lg px-6 py-3"
+            className={`btn btn-primary ${compactMode ? 'text-base px-4 py-2' : 'text-lg px-6 py-3'}`}
           >
             <Plus className="h-5 w-5" />
             Add Your First Position
           </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+      ) : compactMode ? (
+        // Mobile Layout: Stack everything vertically with collapsible sections
+        <div className="space-y-3">
+          <CollapsibleSection
+            title="Portfolio Summary"
+            icon={<BarChart3 className="h-4 w-4" />}
+            compactMode={true}
+            defaultExpanded={true}
+          >
+            <PortfolioSummary
+              totalValue={totalValue}
+              totalGain={totalGain}
+              totalGainPercent={totalGainPercent}
+              totalPositions={holdings.length}
+              hideTitle={true}
+            />
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            title="Holdings Table"
+            icon={<BarChart3 className="h-4 w-4" />}
+            compactMode={true}
+            defaultExpanded={true}
+          >
             <HoldingsTable
               holdings={holdings}
               onEdit={handleEditPosition}
               onDelete={handleDeletePosition}
               onUpdatePrice={handleUpdatePrice}
+              showTitle={false}
             />
-          </div>
-          <div className="lg:col-span-1">
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            title="Asset Allocation"
+            icon={<PieChartIcon className="h-4 w-4" />}
+            compactMode={true}
+            defaultExpanded={false}
+          >
             <PieChart holdings={holdings} />
+          </CollapsibleSection>
+        </div>
+      ) : (
+        // Desktop Layout: Original grid layout
+        <div className="space-y-6">
+          <PortfolioSummary
+            totalValue={totalValue}
+            totalGain={totalGain}
+            totalGainPercent={totalGainPercent}
+            totalPositions={holdings.length}
+          />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <HoldingsTable
+                holdings={holdings}
+                onEdit={handleEditPosition}
+                onDelete={handleDeletePosition}
+                onUpdatePrice={handleUpdatePrice}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <PieChart holdings={holdings} />
+            </div>
           </div>
         </div>
       )}

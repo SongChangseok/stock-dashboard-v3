@@ -11,14 +11,6 @@ export interface Holding {
   unrealizedGainPercent: number // 미실현 수익률
 }
 
-// 포트폴리오 스냅샷
-export interface PortfolioSnapshot {
-  date: string // ISO datetime
-  holdings: Holding[]
-  totalValue: number
-  totalGain: number
-  totalGainPercent: number
-}
 
 // 목표 자산 배분
 export interface TargetAllocation {
@@ -47,26 +39,15 @@ export interface Settings {
 
 // 전체 포트폴리오 데이터
 export interface PortfolioData {
-  portfolioHistory: PortfolioSnapshot[]
+  holdings: Holding[]
   targets: TargetAllocation[]
   settings: Settings
-}
-
-// 성과 지표
-export interface PerformanceMetrics {
-  totalReturn: number
-  totalReturnPercent: number
-  annualizedReturn: number
-  volatility: number
-  sharpeRatio: number
-  maxDrawdown: number
 }
 
 // UI 상태 타입
 export interface UIState {
   isLoading: boolean
   error: string | null
-  selectedPeriod: '1M' | '3M' | '1Y' | 'ALL'
 }
 
 // 컴포넌트 Props 타입

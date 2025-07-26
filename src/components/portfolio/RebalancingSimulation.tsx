@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { Card, CardHeader, CardContent, CardTitle } from '../ui/Card'
 import Button from '../ui/Button'
 import Table from '../ui/Table'
@@ -10,6 +10,9 @@ interface RebalancingSimulationProps {
   suggestions: RebalancingSuggestion[]
   currentHoldings: Holding[]
   isLoading?: boolean
+  simulationState: 'hidden' | 'shown' | 'running'
+  onRunSimulation?: () => void
+  onResetSimulation?: () => void
 }
 
 interface SimulationResult {
@@ -29,11 +32,13 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
   suggestions,
   currentHoldings,
   isLoading = false,
+  simulationState,
+  onRunSimulation,
+  onResetSimulation,
 }) => {
-  const [isSimulated, setIsSimulated] = useState(false)
 
   const simulationResults = useMemo(() => {
-    if (!isSimulated || suggestions.length === 0) return []
+    if (simulationState !== 'running' || suggestions.length === 0) return []
 
     const results: SimulationResult[] = []
     const holdingsMap = new Map(currentHoldings.map(h => [h.symbol, h]))
@@ -98,15 +103,7 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
 
     return results.filter(r => r.quantityChange !== 0 || r.currentQuantity > 0)
       .sort((a, b) => Math.abs(b.valueChange) - Math.abs(a.valueChange))
-  }, [suggestions, currentHoldings, isSimulated])
-
-  const handleRunSimulation = () => {
-    setIsSimulated(true)
-  }
-
-  const handleReset = () => {
-    setIsSimulated(false)
-  }
+  }, [suggestions, currentHoldings, simulationState])
 
   if (isLoading) {
     return (
@@ -208,17 +205,18 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
             Rebalancing Simulation
           </CardTitle>
           <div className="flex gap-2">
-            {!isSimulated ? (
+            {simulationState === 'shown' && onRunSimulation && (
               <Button
                 variant="primary"
-                onClick={handleRunSimulation}
+                onClick={onRunSimulation}
                 disabled={suggestions.length === 0}
               >
                 <Play className="h-4 w-4" />
                 Run Simulation
               </Button>
-            ) : (
-              <Button variant="secondary" onClick={handleReset}>
+            )}
+            {simulationState === 'running' && onResetSimulation && (
+              <Button variant="secondary" onClick={onResetSimulation}>
                 <RotateCcw className="h-4 w-4" />
                 Reset
               </Button>
@@ -227,7 +225,7 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        {!isSimulated ? (
+        {simulationState === 'shown' ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
               <Calculator className="h-8 w-8 text-blue-600" />
@@ -238,16 +236,18 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Run the simulation to see how the rebalancing suggestions would affect your portfolio
             </p>
-            <Button
-              variant="primary"
-              onClick={handleRunSimulation}
-              disabled={suggestions.length === 0}
-            >
-              <Play className="h-4 w-4" />
-              Run Simulation
-            </Button>
+            {onRunSimulation && (
+              <Button
+                variant="primary"
+                onClick={onRunSimulation}
+                disabled={suggestions.length === 0}
+              >
+                <Play className="h-4 w-4" />
+                Run Simulation
+              </Button>
+            )}
           </div>
-        ) : (
+        ) : simulationState === 'running' ? (
           <div className="space-y-6">
             {/* Summary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -281,6 +281,7 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
                   data={simulationResults}
                   columns={columns}
                   className="border-0"
+                  mobileCardView={true}
                 />
               </div>
             ) : (
@@ -308,7 +309,7 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
               </div>
             </div>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   )
