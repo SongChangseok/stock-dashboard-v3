@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Shuffle, AlertTriangle } from 'lucide-react'
 import { usePortfolioStore } from '../stores/portfolioStore'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
+import RebalancingSuggestions from '../components/portfolio/RebalancingSuggestions'
+import RebalancingSimulation from '../components/portfolio/RebalancingSimulation'
 
 const Rebalancing: React.FC = () => {
-  const { getRebalancingSuggestions } = usePortfolioStore()
+  const { getRebalancingSuggestions, getCurrentHoldings, ui } = usePortfolioStore()
+  const [showSimulation, setShowSimulation] = useState(false)
 
   const suggestions = getRebalancingSuggestions()
+  const currentHoldings = getCurrentHoldings()
   const needsRebalancing = suggestions.length > 0
 
   return (
@@ -20,9 +24,13 @@ const Rebalancing: React.FC = () => {
             Review portfolio rebalancing suggestions
           </p>
         </div>
-        <button className="btn btn-primary">
+        <button 
+          className="btn btn-primary"
+          onClick={() => setShowSimulation(!showSimulation)}
+          disabled={suggestions.length === 0}
+        >
           <Shuffle className="h-4 w-4" />
-          Rebalancing Simulation
+          {showSimulation ? 'Hide Simulation' : 'Show Simulation'}
         </button>
       </div>
 
@@ -69,27 +77,19 @@ const Rebalancing: React.FC = () => {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Rebalancing Suggestions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {suggestions.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
-                No positions currently require rebalancing
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                All positions are within ±5% of target allocation
-              </p>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400">Rebalancing suggestions table under development</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <RebalancingSuggestions
+        suggestions={suggestions}
+        isLoading={ui.isLoading}
+        onSimulate={() => setShowSimulation(true)}
+      />
+
+      {showSimulation && (
+        <RebalancingSimulation
+          suggestions={suggestions}
+          currentHoldings={currentHoldings}
+          isLoading={ui.isLoading}
+        />
+      )}
     </div>
   )
 }

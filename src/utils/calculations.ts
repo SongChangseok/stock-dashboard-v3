@@ -221,18 +221,9 @@ export const calculatePerformanceMetrics = (
 }
 
 /**
- * 숫자를 통화 형식으로 포맷팅
+ * 숫자를 통화 형식으로 포맷팅 (USD 기본)
  */
-export const formatCurrency = (value: number, currency = 'KRW'): string => {
-  if (currency === 'KRW') {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'KRW',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
+export const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

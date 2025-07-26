@@ -17,6 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - No real-time stock price data (user manual input)
 - No external API integration
 - No multi-user support (local single user)
+- **Currency Standard**: All monetary values displayed in USD ($)
 
 ## Development Commands
 
