@@ -4,6 +4,7 @@ import Header from './Header'
 import Holdings from '../../pages/Holdings'
 import Portfolio from '../../pages/Portfolio'
 import Rebalancing from '../../pages/Rebalancing'
+import DataManagement from '../../pages/DataManagement'
 
 const Layout: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const Layout: React.FC = () => {
               <Route path="/holdings" element={<Holdings />} />
               <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/rebalancing" element={<Rebalancing />} />
+              <Route path="/data-management" element={<DataManagement />} />
             </Routes>
           </div>
         </main>

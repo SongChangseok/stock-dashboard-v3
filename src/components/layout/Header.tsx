@@ -10,6 +10,7 @@ const Header: React.FC = () => {
     { path: '/holdings', label: 'Holdings' },
     { path: '/portfolio', label: 'Portfolio Management' },
     { path: '/rebalancing', label: 'Rebalancing' },
+    { path: '/data-management', label: 'Data Management' },
   ]
 
   const isActive = (path: string) => location.pathname === path

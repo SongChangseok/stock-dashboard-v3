@@ -305,6 +305,8 @@ hover:bg-red-50 dark:hover:bg-red-900/20 (delete actions)
 - ✅ Delete actions: `Trash2`
 - ✅ Add actions: `Plus`
 - ✅ Settings: `Settings`
+- ✅ Export actions: `Download`
+- ✅ Import actions: `Upload`
 - ✅ Icon size: `h-4 w-4` (16px) for buttons, `h-5 w-5` (20px) for titles
 
 ### **3. 🏗️ COMPONENT ARCHITECTURE CONSISTENCY**

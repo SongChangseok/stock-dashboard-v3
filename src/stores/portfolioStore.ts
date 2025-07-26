@@ -24,6 +24,7 @@ import {
   portfolioToCsv,
   csvToPortfolio,
   validatePortfolioData,
+  getErrorMessage,
 } from '../utils/dataTransform'
 
 interface PortfolioStore {
@@ -326,8 +327,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
             settings: { ...state.settings, lastUpdated: getCurrentISODate() },
           }))
         } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : 'An error occurred while importing CSV.'
+          const errorMessage = getErrorMessage(error, 'An error occurred while importing CSV.')
           get().setError(errorMessage)
           throw error
         } finally {

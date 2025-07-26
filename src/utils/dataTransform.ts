@@ -237,9 +237,23 @@ export const validatePortfolioData = (data: unknown): data is PortfolioData => {
     return false
   }
 
+  // 각 포트폴리오 스냅샷 검증
+  for (const snapshot of portfolioData.portfolioHistory) {
+    if (!validatePortfolioSnapshot(snapshot)) {
+      return false
+    }
+  }
+
   // targets 검증
   if (!Array.isArray(portfolioData.targets)) {
     return false
+  }
+
+  // 각 타겟 배분 검증
+  for (const target of portfolioData.targets) {
+    if (!validateTargetAllocation(target)) {
+      return false
+    }
   }
 
   // settings 검증
@@ -247,7 +261,105 @@ export const validatePortfolioData = (data: unknown): data is PortfolioData => {
     return false
   }
 
+  if (typeof portfolioData.settings.darkMode !== 'boolean') {
+    return false
+  }
+
+  if (typeof portfolioData.settings.lastUpdated !== 'string') {
+    return false
+  }
+
   return true
+}
+
+/**
+ * 포트폴리오 스냅샷 유효성 검증
+ */
+export const validatePortfolioSnapshot = (snapshot: unknown): snapshot is PortfolioSnapshot => {
+  if (!snapshot || typeof snapshot !== 'object') {
+    return false
+  }
+
+  const snap = snapshot as PortfolioSnapshot
+
+  // 기본 필드 검증
+  if (!snap.date || typeof snap.date !== 'string') {
+    return false
+  }
+
+  if (!Array.isArray(snap.holdings)) {
+    return false
+  }
+
+  if (typeof snap.totalValue !== 'number' || snap.totalValue < 0) {
+    return false
+  }
+
+  if (typeof snap.totalGain !== 'number') {
+    return false
+  }
+
+  if (typeof snap.totalGainPercent !== 'number') {
+    return false
+  }
+
+  // 각 보유 종목 검증
+  for (const holding of snap.holdings) {
+    if (!validateHolding(holding)) {
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
+ * 보유 종목 유효성 검증
+ */
+export const validateHolding = (holding: unknown): holding is Holding => {
+  if (!holding || typeof holding !== 'object') {
+    return false
+  }
+
+  const h = holding as Holding
+
+  return (
+    typeof h.id === 'string' &&
+    typeof h.symbol === 'string' &&
+    h.symbol.trim().length > 0 &&
+    typeof h.name === 'string' &&
+    h.name.trim().length > 0 &&
+    typeof h.quantity === 'number' &&
+    h.quantity > 0 &&
+    typeof h.avgPrice === 'number' &&
+    h.avgPrice > 0 &&
+    typeof h.currentPrice === 'number' &&
+    h.currentPrice > 0 &&
+    typeof h.marketValue === 'number' &&
+    h.marketValue >= 0 &&
+    typeof h.unrealizedGain === 'number' &&
+    typeof h.unrealizedGainPercent === 'number'
+  )
+}
+
+/**
+ * 목표 배분 유효성 검증
+ */
+export const validateTargetAllocation = (target: unknown): target is TargetAllocation => {
+  if (!target || typeof target !== 'object') {
+    return false
+  }
+
+  const t = target as TargetAllocation
+
+  return (
+    typeof t.symbol === 'string' &&
+    t.symbol.trim().length > 0 &&
+    typeof t.targetWeight === 'number' &&
+    t.targetWeight >= 0 &&
+    t.targetWeight <= 100 &&
+    typeof t.tag === 'string'
+  )
 }
 
 /**
@@ -325,4 +437,137 @@ export const getCurrentISODate = (): string => {
  */
 export const generateId = (): string => {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+}
+
+/**
+ * 에러 메시지 추출 유틸리티
+ */
+export const getErrorMessage = (error: unknown, fallback = 'Unknown error occurred'): string => {
+  return error instanceof Error ? error.message : fallback
+}
+
+/**
+ * 파일 크기 검증 (10MB 제한)
+ */
+export const validateFileSize = (file: File, maxSizeMB = 10): boolean => {
+  const maxSizeBytes = maxSizeMB * 1024 * 1024
+  return file.size <= maxSizeBytes
+}
+
+/**
+ * 파일 확장자 검증
+ */
+export const validateFileExtension = (file: File, allowedExtensions: string[]): boolean => {
+  const fileExtension = file.name.toLowerCase().split('.').pop()
+  return fileExtension ? allowedExtensions.includes(fileExtension) : false
+}
+
+/**
+ * JSON 파일 내용 검증
+ */
+export const validateJsonFile = async (file: File): Promise<{ isValid: boolean; error?: string; data?: PortfolioData }> => {
+  try {
+    // 파일 크기 검증
+    if (!validateFileSize(file)) {
+      return { isValid: false, error: 'File size exceeds 10MB limit.' }
+    }
+
+    // 파일 확장자 검증
+    if (!validateFileExtension(file, ['json'])) {
+      return { isValid: false, error: 'Invalid file type. Please select a JSON file.' }
+    }
+
+    // 파일 내용 읽기
+    const content = await readFileAsText(file)
+    
+    // JSON 파싱
+    let data: unknown
+    try {
+      data = JSON.parse(content)
+    } catch (parseError) {
+      return { isValid: false, error: 'Invalid JSON format.' }
+    }
+
+    // 포트폴리오 데이터 구조 검증
+    if (!validatePortfolioData(data)) {
+      return { isValid: false, error: 'Invalid portfolio data structure.' }
+    }
+
+    return { isValid: true, data: data as PortfolioData }
+  } catch (error) {
+    return { isValid: false, error: getErrorMessage(error) }
+  }
+}
+
+/**
+ * CSV 파일 내용 검증
+ */
+export const validateCsvFile = async (file: File): Promise<{ isValid: boolean; error?: string; data?: string }> => {
+  try {
+    // 파일 크기 검증
+    if (!validateFileSize(file)) {
+      return { isValid: false, error: 'File size exceeds 10MB limit.' }
+    }
+
+    // 파일 확장자 검증
+    if (!validateFileExtension(file, ['csv'])) {
+      return { isValid: false, error: 'Invalid file type. Please select a CSV file.' }
+    }
+
+    // 파일 내용 읽기
+    const content = await readFileAsText(file)
+
+    // CSV 내용 기본 검증
+    const lines = content.trim().split('\n')
+    if (lines.length < 2) {
+      return { isValid: false, error: 'CSV file must contain at least one data row.' }
+    }
+
+    // 헤더 검증
+    const headers = lines[0].split(',')
+    const requiredHeaders = ['date', 'symbol', 'name', 'quantity', 'avgPrice', 'currentPrice']
+    const missingHeaders = requiredHeaders.filter(header => !headers.includes(header))
+    
+    if (missingHeaders.length > 0) {
+      return { 
+        isValid: false, 
+        error: `Required columns are missing: ${missingHeaders.join(', ')}` 
+      }
+    }
+
+    return { isValid: true, data: content }
+  } catch (error) {
+    return { isValid: false, error: getErrorMessage(error) }
+  }
+}
+
+/**
+ * 데이터 백업 전 확인
+ */
+export const validateDataForExport = (data: PortfolioData): { isValid: boolean; warnings: string[] } => {
+  const warnings: string[] = []
+
+  // 빈 포트폴리오 히스토리 확인
+  if (data.portfolioHistory.length === 0) {
+    warnings.push('No portfolio history data to export.')
+  }
+
+  // 빈 보유 종목 확인
+  const currentSnapshot = data.portfolioHistory[data.portfolioHistory.length - 1]
+  if (currentSnapshot && currentSnapshot.holdings.length === 0) {
+    warnings.push('Current portfolio has no positions.')
+  }
+
+  // 타겟 배분 확인
+  if (data.targets.length === 0) {
+    warnings.push('No target allocations defined.')
+  }
+
+  // 타겟 배분 합계 확인
+  const totalTargetWeight = data.targets.reduce((sum, target) => sum + target.targetWeight, 0)
+  if (totalTargetWeight !== 100 && data.targets.length > 0) {
+    warnings.push(`Target allocation weights sum to ${totalTargetWeight.toFixed(1)}% instead of 100%.`)
+  }
+
+  return { isValid: true, warnings }
 }

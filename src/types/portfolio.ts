@@ -101,16 +101,6 @@ export interface ModalProps {
   children: React.ReactNode
 }
 
-export interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'danger'
-  size?: 'sm' | 'md' | 'lg'
-  disabled?: boolean
-  loading?: boolean
-  onClick?: () => void
-  children: React.ReactNode
-  className?: string
-}
-
 // CSV 데이터 변환용 타입
 export interface CSVRow {
   date: string
