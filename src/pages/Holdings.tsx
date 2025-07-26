@@ -1,14 +1,80 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { usePortfolioStore } from '../stores/portfolioStore'
-import Card, { CardHeader, CardTitle, CardContent } from '../components/ui/Card'
-import Button from '../components/ui/Button'
+import HoldingsTable from '../components/portfolio/HoldingsTable'
+import PortfolioSummary from '../components/portfolio/PortfolioSummary'
+import StockModal from '../components/portfolio/StockModal'
+import PieChart from '../components/charts/PieChart'
+import type { Holding, HoldingFormData } from '../types/portfolio'
 
 const Holdings: React.FC = () => {
-  const { getCurrentHoldings, getTotalValue } = usePortfolioStore()
+  const {
+    getCurrentHoldings,
+    getTotalValue,
+    getTotalGain,
+    getTotalGainPercent,
+    addHolding,
+    updateHolding,
+    deleteHolding,
+    updateHoldingPrice,
+    ui,
+    setError,
+  } = usePortfolioStore()
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingPosition, setEditingPosition] = useState<Holding | null>(null)
 
   const holdings = getCurrentHoldings()
   const totalValue = getTotalValue()
+  const totalGain = getTotalGain()
+  const totalGainPercent = getTotalGainPercent()
+
+  const handleAddPosition = () => {
+    setEditingPosition(null)
+    setIsModalOpen(true)
+  }
+
+  const handleEditPosition = (position: Holding) => {
+    setEditingPosition(position)
+    setIsModalOpen(true)
+  }
+
+  const handleDeletePosition = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this position?')) {
+      try {
+        deleteHolding(id)
+      } catch (error) {
+        setError('Failed to delete position')
+      }
+    }
+  }
+
+  const handleUpdatePrice = (id: string, price: number) => {
+    try {
+      updateHoldingPrice(id, price)
+    } catch (error) {
+      setError('Failed to update position price')
+    }
+  }
+
+  const handleSavePosition = (formData: HoldingFormData) => {
+    try {
+      if (editingPosition) {
+        updateHolding(editingPosition.id, formData)
+      } else {
+        addHolding(formData)
+      }
+      setIsModalOpen(false)
+      setEditingPosition(null)
+    } catch (error) {
+      setError('Failed to save position')
+    }
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setEditingPosition(null)
+  }
 
   return (
     <div className="space-y-6 animate-fade-in-scale">
@@ -18,73 +84,79 @@ const Holdings: React.FC = () => {
             Holdings
           </h1>
           <p className="text-lg" style={{ color: 'var(--muted-foreground)' }}>
-            Manage your current stock holdings status
+            Manage your portfolio positions and track performance
           </p>
         </div>
-        <Button className="flex items-center space-x-2" icon={<Plus className="h-4 w-4" />}>
-          <span>Add Stock</span>
-        </Button>
+        <button
+          onClick={handleAddPosition}
+          disabled={ui.isLoading}
+          className="btn btn-primary"
+        >
+          <Plus className="h-4 w-4" />
+          Add Position
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Number of Holdings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold counter-up" style={{ color: 'var(--primary)' }}>
-              {holdings.length}
-            </p>
-          </CardContent>
-        </Card>
+      {ui.error && (
+        <div 
+          className="p-4 rounded-lg border"
+          style={{ 
+            backgroundColor: 'var(--error-light)',
+            borderColor: 'var(--error)',
+            color: 'var(--error)'
+          }}
+        >
+          {ui.error}
+        </div>
+      )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Market Value</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold counter-up text-success">
-              {new Intl.NumberFormat('ko-KR', {
-                style: 'currency',
-                currency: 'KRW',
-                minimumFractionDigits: 0,
-              }).format(totalValue)}
-            </p>
-          </CardContent>
-        </Card>
+      <PortfolioSummary
+        totalValue={totalValue}
+        totalGain={totalGain}
+        totalGainPercent={totalGainPercent}
+        totalPositions={holdings.length}
+      />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Gain/Loss</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold counter-up gain-neutral">-</p>
-          </CardContent>
-        </Card>
-      </div>
+      {holdings.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 flex items-center justify-center">
+            <Plus className="h-10 w-10" style={{ color: 'var(--primary)' }} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">No positions in your portfolio</h3>
+          <p className="text-lg mb-8" style={{ color: 'var(--muted-foreground)' }}>
+            Add your first position to start tracking your portfolio performance
+          </p>
+          <button
+            onClick={handleAddPosition}
+            className="btn btn-primary text-lg px-6 py-3"
+          >
+            <Plus className="h-5 w-5" />
+            Add Your First Position
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <HoldingsTable
+              holdings={holdings}
+              onEdit={handleEditPosition}
+              onDelete={handleDeletePosition}
+              onUpdatePrice={handleUpdatePrice}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <PieChart holdings={holdings} />
+          </div>
+        </div>
+      )}
 
-      <Card className="animate-slide-in-bottom">
-        <CardHeader>
-          <CardTitle>Stock Holdings List</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {holdings.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-blue-800/20 flex items-center justify-center">
-                <Plus className="h-8 w-8" style={{ color: 'var(--primary)' }} />
-              </div>
-              <p className="text-lg mb-6" style={{ color: 'var(--muted-foreground)' }}>
-                No stocks currently held
-              </p>
-              <Button icon={<Plus className="h-4 w-4" />}>Add Your First Stock</Button>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400">Stock table component under development</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <StockModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSavePosition}
+        editingPosition={editingPosition}
+        isLoading={ui.isLoading}
+      />
     </div>
   )
 }

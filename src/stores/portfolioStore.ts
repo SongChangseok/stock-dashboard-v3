@@ -173,64 +173,55 @@ export const usePortfolioStore = create<PortfolioStore>()(
           }
         }),
 
-      addHolding: formData =>
-        set(state => {
-          const holdings = get().getCurrentHoldings()
-          const newHolding: Holding = {
-            ...formDataToHolding(formData),
-            id: generateId(),
-          }
+      addHolding: formData => {
+        const holdings = get().getCurrentHoldings()
+        const newHolding: Holding = {
+          ...formDataToHolding(formData),
+          id: generateId(),
+        }
 
-          const updatedHoldings = [...holdings, newHolding]
-          get().updateCurrentHoldings(updatedHoldings)
+        const updatedHoldings = [...holdings, newHolding]
+        get().updateCurrentHoldings(updatedHoldings)
+      },
 
-          return state
-        }),
+      updateHolding: (id, formData) => {
+        const holdings = get().getCurrentHoldings()
+        const updatedHoldings = holdings.map(holding =>
+          holding.id === id ? { ...formDataToHolding(formData), id } : holding
+        )
 
-      updateHolding: (id, formData) =>
-        set(state => {
-          const holdings = get().getCurrentHoldings()
-          const updatedHoldings = holdings.map(holding =>
-            holding.id === id ? { ...formDataToHolding(formData), id } : holding
-          )
+        get().updateCurrentHoldings(updatedHoldings)
+      },
 
-          get().updateCurrentHoldings(updatedHoldings)
-          return state
-        }),
+      deleteHolding: id => {
+        const holdings = get().getCurrentHoldings()
+        const updatedHoldings = holdings.filter(holding => holding.id !== id)
 
-      deleteHolding: id =>
-        set(state => {
-          const holdings = get().getCurrentHoldings()
-          const updatedHoldings = holdings.filter(holding => holding.id !== id)
+        get().updateCurrentHoldings(updatedHoldings)
+      },
 
-          get().updateCurrentHoldings(updatedHoldings)
-          return state
-        }),
+      updateHoldingPrice: (id, newPrice) => {
+        const holdings = get().getCurrentHoldings()
+        const updatedHoldings = holdings.map(holding => {
+          if (holding.id === id) {
+            const marketValue = holding.quantity * newPrice
+            const totalCost = holding.quantity * holding.avgPrice
+            const unrealizedGain = marketValue - totalCost
+            const unrealizedGainPercent = totalCost > 0 ? (unrealizedGain / totalCost) * 100 : 0
 
-      updateHoldingPrice: (id, newPrice) =>
-        set(state => {
-          const holdings = get().getCurrentHoldings()
-          const updatedHoldings = holdings.map(holding => {
-            if (holding.id === id) {
-              const marketValue = holding.quantity * newPrice
-              const totalCost = holding.quantity * holding.avgPrice
-              const unrealizedGain = marketValue - totalCost
-              const unrealizedGainPercent = totalCost > 0 ? (unrealizedGain / totalCost) * 100 : 0
-
-              return {
-                ...holding,
-                currentPrice: newPrice,
-                marketValue,
-                unrealizedGain,
-                unrealizedGainPercent,
-              }
+            return {
+              ...holding,
+              currentPrice: newPrice,
+              marketValue,
+              unrealizedGain,
+              unrealizedGainPercent,
             }
-            return holding
-          })
+          }
+          return holding
+        })
 
-          get().updateCurrentHoldings(updatedHoldings)
-          return state
-        }),
+        get().updateCurrentHoldings(updatedHoldings)
+      },
 
       // Target allocation actions
       setTargets: targets =>
@@ -369,12 +360,10 @@ export const usePortfolioStore = create<PortfolioStore>()(
         get().addPortfolioSnapshot(snapshot)
       },
 
-      refreshCalculations: () =>
-        set(state => {
-          const holdings = get().getCurrentHoldings()
-          get().updateCurrentHoldings(holdings)
-          return state
-        }),
+      refreshCalculations: () => {
+        const holdings = get().getCurrentHoldings()
+        get().updateCurrentHoldings(holdings)
+      },
     })),
     {
       name: 'portfolio-store',

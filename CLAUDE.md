@@ -61,16 +61,36 @@ npm run preview    # Preview production build
 - **Avoid excessive refactoring**: Modify working code only when necessary
 - **Prevent duplicate type definitions**: Maximize use of existing types in `src/types/portfolio.ts`
 
+### Consistency Requirements
+
+- **Terminology Consistency**: ALWAYS use standardized financial terms consistently across all components
+  - Use "Position" instead of "Stock" for individual holdings
+  - Use "Holdings" for the collection of all positions
+  - Use financial industry standard terms: "Market Value", "Cost Basis", "P&L", "Unrealized Gain/Loss"
+  - Maintain consistent labeling patterns (e.g., "Total" prefix for summary metrics)
+
+- **Design System Consistency**: ALWAYS maintain uniform design patterns
+  - Use predefined CSS classes from `src/index.css` (`.btn`, `.btn-primary`, `.btn-secondary`, etc.)
+  - Apply consistent color coding: green (`var(--success)`) for gains, red (`var(--error)`) for losses
+  - Use uniform spacing, padding, and card layouts following existing Card component patterns
+  - Maintain consistent button sizes, hover states, and interaction feedback
+
+- **Component Pattern Consistency**: ALWAYS follow established architectural patterns
+  - Use Zustand store actions for all state management
+  - Follow existing component composition patterns (CardHeader, CardContent, CardTitle)
+  - Maintain consistent prop naming and component interfaces
+  - Apply uniform error handling and loading state patterns
+
 ## Page Structure and Features
 
 ### 3 Main Pages
 
-1. **Stock Holdings Page**: View current stock holdings at a glance and track period-based returns
+1. **Stock Holdings Page**: View current portfolio positions at a glance and track performance
 
-   - Holdings table (symbol, quantity, average price, current price, unrealized gain/loss, return rate)
-   - Total portfolio value and profit/loss summary
+   - Holdings table (symbol, quantity, average cost, total cost, market price, market value, unrealized P&L)
+   - Portfolio Summary with 4 key metrics (Total Cost Basis, Total Market Value, Total Unrealized P&L, Total Positions)
    - Asset allocation pie chart visualization
-   - Add/edit/delete stocks functionality, manual current price updates
+   - Add/edit/delete positions functionality, manual current price updates
 
 2. **Portfolio Management Page**: Portfolio composition and target allocation management
 
@@ -209,8 +229,29 @@ Core financial calculation functions:
 ### Current Project Status
 
 - ✅ **Complete Foundation Infrastructure**: Type system, Zustand store, utility functions all completed
-- ❌ **UI Components Not Implemented**: `src/components/` folder is empty, awaiting Phase 2 development
-- 🎯 **Next Step**: Focus only on UI component development for quick completion
+- ✅ **Phase 2 UI Components Completed**: All core components implemented and functional
+- ✅ **Holdings Page Fully Implemented**: Complete CRUD operations, portfolio summary, and data visualization
+- ✅ **Consistency Standards Established**: Terminology, design patterns, and component structure standardized
+- 🎯 **Next Step**: Phase 3 additional features (Portfolio Management Page, Rebalancing Page)
+
+### ⚠️ MANDATORY CONSISTENCY RULES
+
+**Before implementing ANY new feature, ALWAYS:**
+
+1. **Terminology Check**: Review existing components to ensure consistent use of financial terms
+   - "Position" not "Stock" for individual holdings
+   - "Holdings" for collections of positions  
+   - Standard financial terms: "Market Value", "Cost Basis", "P&L", "Unrealized Gain/Loss"
+
+2. **Design Pattern Check**: Follow established UI patterns
+   - Use `.btn`, `.btn-primary`, `.btn-secondary` classes
+   - Apply consistent color coding: green for gains, red for losses
+   - Follow Card component structure: CardHeader, CardContent, CardTitle
+
+3. **Component Structure Check**: Maintain architectural consistency
+   - Use Zustand store actions for state management
+   - Follow existing prop naming conventions
+   - Apply uniform error handling and loading states
 
 ### Type-First Development Pattern
 
@@ -262,27 +303,32 @@ const StockForm = () => {
 3. **Calculation logic**: Implement business logic in `src/utils/calculations.ts`
 4. **Store actions**: Add actions following existing patterns in `src/stores/portfolioStore.ts`
 5. **UI components**: Prioritize reusing existing `src/components/ui/` components, create new ones only when necessary
+6. **⚠️ CRITICAL**: ALWAYS maintain consistency in terminology, design patterns, and component structure
+   - Review existing components for naming conventions before implementing
+   - Use consistent button styles, color schemes, and card layouts
+   - Follow established patterns for error handling and loading states
 
 ### Component Structure
 
 ```
 src/components/
-├── ui/          # Reusable basic UI (Button, Input, Card, Modal, Table)
-├── charts/      # Recharts-based chart components (PieChart, LineChart, BarChart)
-├── portfolio/   # Business logic components (HoldingsTable, PortfolioSummary, StockModal)
-└── layout/      # Layout components (Header, Sidebar, Layout)
+├── ui/          # Reusable basic UI (Button, Input, Card, Modal, Table) ✅
+├── charts/      # Recharts-based chart components (PieChart) ✅
+├── portfolio/   # Business logic components (HoldingsTable, PortfolioSummary, StockModal) ✅
+└── layout/      # Layout components (Header, Sidebar, Layout) - TODO
 ```
 
 ### Tailwind CSS Styling
 
 - **Predefined classes**: `.card`, `.btn`, `.btn-primary` etc. (`src/index.css`)
 - **Dark mode**: Use `dark:` prefix, controlled by `settings.darkMode`
+- **IMPORTANT**: ALWAYS use predefined CSS classes for consistency
 
 ```tsx
-// Recommended: Use predefined classes
+// Recommended: Use predefined classes and consistent terminology
 <div className="card">
   <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Portfolio Status</h2>
-  <button className="btn btn-primary">Add Stock</button>
+  <button className="btn btn-primary">Add Position</button>
   <button className="btn btn-secondary">Cancel</button>
 </div>
 ```
@@ -334,7 +380,7 @@ date,symbol,name,quantity,avgPrice,currentPrice,marketValue,unrealizedGain,unrea
 
 Based on 5% threshold:
 
-- For stocks where current weight vs target weight difference is 5% or more
+- For positions where current weight vs target weight difference is 5% or more
 - Calculate buy/sell quantities and amounts to generate `RebalancingSuggestion`
 
 ## Development Priorities
@@ -343,22 +389,22 @@ Based on 5% threshold:
 
 Project initialization and foundation building completed
 
-### Phase 2 (Next Step) - Basic UI Component Development
+### Phase 2 (Basic UI Components) - Completed ✅
 
-**Development Priorities**:
+**Completed Components**:
 
-1. **UI Components First**: `Button`, `Input`, `Card`, `Modal` basic components
-2. **HoldingsTable**: Most important business component
-3. **StockModal**: Stock add/edit form
-4. **Chart Components**: `PieChart` (stock allocation)
-5. **Layout**: `Header`, `Sidebar` structure
+1. **UI Components**: `Button`, `Input`, `Card`, `Modal`, `Table` basic components
+2. **HoldingsTable**: Complete holdings display with sorting, filtering, and CRUD operations
+3. **PortfolioSummary**: 4-card metrics display (Cost Basis, Market Value, P&L, Positions)
+4. **StockModal**: Position add/edit form with real-time validation and preview
+5. **PieChart**: Portfolio allocation visualization with Recharts
 
-**Implementation Content**:
+**Implemented Features**:
 
-1. **Stock Holdings Page**: Stock add/edit/delete, current portfolio status table, stock allocation pie chart
-2. **Portfolio Management Page**: Target weight settings, current vs target weight comparison (bar chart)
-3. **Rebalancing Management Page**: Rebalancing suggestions (fixed 5% threshold)
-4. **Data Management**: JSON upload/download, LocalStorage saving
+1. **Stock Holdings Page**: Complete implementation with position CRUD, portfolio summary, and allocation chart
+2. **Terminology Standardization**: Unified use of "Position" instead of "Stock", financial terminology consistency
+3. **Design System**: Consistent button styles, color coding (green/red for gains/losses), unified Card layouts
+4. **Data Management**: LocalStorage persistence, form validation, error handling
 
 ### Phase 3 - Additional Features
 
@@ -370,7 +416,7 @@ Project initialization and foundation building completed
 
 ### User Stories (Development Reference)
 
-- **Holdings Status**: Individual investors view stock holdings at a glance and quickly assess portfolio status
+- **Holdings Status**: Individual investors view portfolio positions at a glance and quickly assess portfolio status
 - **Portfolio Management**: Investors set target portfolio weights and compare with current to determine rebalancing needs
 - **Rebalancing**: Investors receive rebalancing suggestions to adjust portfolio to target allocation
 

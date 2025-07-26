@@ -1,8 +1,7 @@
 import React from 'react'
 import { Shuffle, AlertTriangle } from 'lucide-react'
 import { usePortfolioStore } from '../stores/portfolioStore'
-import Card, { CardHeader, CardTitle, CardContent } from '../components/ui/Card'
-import Button from '../components/ui/Button'
+import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
 
 const Rebalancing: React.FC = () => {
   const { getRebalancingSuggestions } = usePortfolioStore()
@@ -21,9 +20,10 @@ const Rebalancing: React.FC = () => {
             Review portfolio rebalancing suggestions
           </p>
         </div>
-        <Button className="flex items-center space-x-2" icon={<Shuffle className="h-4 w-4" />}>
-          <span>Rebalancing Simulation</span>
-        </Button>
+        <button className="btn btn-primary">
+          <Shuffle className="h-4 w-4" />
+          Rebalancing Simulation
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -45,8 +45,8 @@ const Rebalancing: React.FC = () => {
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {needsRebalancing
-                  ? `${suggestions.length} stocks deviate by more than 5%`
-                  : 'All stocks are within target allocation range'}
+                  ? `${suggestions.length} positions deviate by more than 5%`
+                  : 'All positions are within target allocation range'}
               </p>
             </div>
           </CardContent>
@@ -77,10 +77,10 @@ const Rebalancing: React.FC = () => {
           {suggestions.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                No stocks currently require rebalancing
+                No positions currently require rebalancing
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                All stocks are within ±5% of target allocation
+                All positions are within ±5% of target allocation
               </p>
             </div>
           ) : (

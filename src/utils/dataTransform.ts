@@ -99,10 +99,10 @@ export const csvToPortfolio = (csvString: string): Partial<PortfolioData> => {
         case 'unrealizedGain':
         case 'unrealizedGainPercent':
         case 'targetWeight':
-          ;(row as any)[header] = parseFloat(value) || 0
+          (row as any)[header] = parseFloat(value) || 0
           break
         default:
-          ;(row as any)[header] = value || ''
+          (row as any)[header] = value || ''
       }
     })
 
@@ -257,11 +257,11 @@ export const validateHoldingFormData = (data: HoldingFormData): string[] => {
   const errors: string[] = []
 
   if (!data.symbol?.trim()) {
-    errors.push('Please enter stock symbol.')
+    errors.push('Please enter position symbol.')
   }
 
   if (!data.name?.trim()) {
-    errors.push('Please enter stock name.')
+    errors.push('Please enter company name.')
   }
 
   if (!data.quantity || data.quantity <= 0) {
@@ -269,11 +269,11 @@ export const validateHoldingFormData = (data: HoldingFormData): string[] => {
   }
 
   if (!data.avgPrice || data.avgPrice <= 0) {
-    errors.push('Average price must be greater than 0.')
+    errors.push('Average cost must be greater than 0.')
   }
 
   if (!data.currentPrice || data.currentPrice <= 0) {
-    errors.push('Current price must be greater than 0.')
+    errors.push('Market price must be greater than 0.')
   }
 
   return errors

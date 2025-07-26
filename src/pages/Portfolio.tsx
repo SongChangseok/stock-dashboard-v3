@@ -1,8 +1,7 @@
 import React from 'react'
 import { Target, Settings } from 'lucide-react'
 import { usePortfolioStore } from '../stores/portfolioStore'
-import Card, { CardHeader, CardTitle, CardContent } from '../components/ui/Card'
-import Button from '../components/ui/Button'
+import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
 
 const Portfolio: React.FC = () => {
   const { targets, getCurrentWeights } = usePortfolioStore()
@@ -20,9 +19,10 @@ const Portfolio: React.FC = () => {
             Set and manage your target portfolio allocation
           </p>
         </div>
-        <Button className="flex items-center space-x-2" icon={<Settings className="h-4 w-4" />}>
-          <span>Set Target Allocation</span>
-        </Button>
+        <button className="btn btn-primary">
+          <Settings className="h-4 w-4" />
+          Set Target Allocation
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -39,10 +39,10 @@ const Portfolio: React.FC = () => {
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
                   No target allocation has been set
                 </p>
-                <Button size="sm">
-                  <Settings className="h-4 w-4 mr-2" />
+                <button className="btn btn-secondary text-sm px-3 py-1.5">
+                  <Settings className="h-4 w-4" />
                   Set Target Allocation
-                </Button>
+                </button>
               </div>
             ) : (
               <div className="space-y-3">
@@ -66,7 +66,7 @@ const Portfolio: React.FC = () => {
           <CardContent>
             {Object.keys(currentWeights).length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">No stocks currently held</p>
+                <p className="text-gray-500 dark:text-gray-400">No positions currently held</p>
               </div>
             ) : (
               <div className="space-y-3">

@@ -100,14 +100,14 @@ function Table<T extends Record<string, any>>({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: 'var(--border)' }}>
-        <table className={tableClasses}>
+      <div className="rounded-2xl border overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
+        <table className={`${tableClasses} table-auto w-full`}>
           <thead style={{ backgroundColor: 'var(--muted)' }}>
             <tr>
               {columns.map(column => (
                 <th
                   key={String(column.key)}
-                  className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider transition-colors ${
+                  className={`px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider transition-colors ${
                     column.sortable ? 'cursor-pointer hover:bg-opacity-80' : ''
                   }`}
                   style={{
@@ -119,12 +119,12 @@ function Table<T extends Record<string, any>>({
                   onClick={column.sortable ? () => handleSort(column.key) : undefined}
                   onMouseEnter={e => {
                     if (column.sortable) {
-                      ;(e.target as HTMLElement).style.backgroundColor = 'var(--neutral-200)'
+                      (e.target as HTMLElement).style.backgroundColor = 'var(--neutral-200)'
                     }
                   }}
                   onMouseLeave={e => {
                     if (column.sortable) {
-                      ;(e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
+                      (e.target as HTMLElement).style.backgroundColor = 'var(--muted)'
                     }
                   }}
                 >
@@ -157,7 +157,7 @@ function Table<T extends Record<string, any>>({
                   {columns.map(column => (
                     <td
                       key={String(column.key)}
-                      className="px-6 py-4 whitespace-nowrap text-sm font-medium"
+                      className="px-3 py-3 whitespace-nowrap text-sm font-medium"
                       style={{ color: 'var(--foreground)' }}
                     >
                       {column.render

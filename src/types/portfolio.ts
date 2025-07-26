@@ -1,14 +1,14 @@
-// 보유 종목 정보
+// 보유 포지션 정보
 export interface Holding {
   id: string
-  symbol: string
-  name: string
-  quantity: number
-  avgPrice: number
-  currentPrice: number
-  marketValue: number
-  unrealizedGain: number
-  unrealizedGainPercent: number
+  symbol: string // 포지션 심볼
+  name: string // 회사명
+  quantity: number // 보유 수량
+  avgPrice: number // 평균 매수 원가
+  currentPrice: number // 현재 시장 가격
+  marketValue: number // 시장 가치
+  unrealizedGain: number // 미실현 손익
+  unrealizedGainPercent: number // 미실현 수익률
 }
 
 // 포트폴리오 스냅샷
