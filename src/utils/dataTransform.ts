@@ -40,15 +40,3 @@ export const formDataToHolding = (formData: HoldingFormData): Omit<Holding, 'id'
   }
 }
 
-/**
- * 에러 메시지 추출
- */
-export const getErrorMessage = (error: unknown, fallback: string): string => {
-  if (error instanceof Error) {
-    return error.message
-  }
-  if (typeof error === 'string') {
-    return error
-  }
-  return fallback
-}

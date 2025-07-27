@@ -79,7 +79,9 @@ export interface AllocationInfo {
 export interface ModalProps {
   isOpen: boolean
   onClose: () => void
+  title?: string
   children: React.ReactNode
+  size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
 // CSV 데이터 변환용 타입

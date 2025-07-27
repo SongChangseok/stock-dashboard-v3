@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Save, X, Target } from 'lucide-react'
 import Modal from '../ui/Modal'
 import Input from '../ui/Input'
+import LoadingSpinner from '../ui/LoadingSpinner'
 import type { TargetAllocation, TargetAllocationFormData } from '../../types/portfolio'
 
 interface TargetAllocationModalProps {
@@ -220,7 +221,7 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
           >
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <LoadingSpinner />
               </div>
             )}
             <div className={`flex items-center gap-2 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>

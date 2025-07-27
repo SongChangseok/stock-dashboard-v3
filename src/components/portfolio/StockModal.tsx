@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { Save, X } from 'lucide-react'
 import Modal from '../ui/Modal'
 import Input from '../ui/Input'
+import LoadingSpinner from '../ui/LoadingSpinner'
+import { formatCurrency } from '../../utils/calculations'
 import type { Holding, HoldingFormData } from '../../types/portfolio'
 
 interface StockModalProps {
@@ -190,19 +192,13 @@ const StockModal: React.FC<StockModalProps> = ({
               <div>
                 <span className="opacity-70">Market Value: </span>
                 <span className="font-medium">
-                  ${(formData.quantity * formData.currentPrice).toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatCurrency(formData.quantity * formData.currentPrice)}
                 </span>
               </div>
               <div>
                 <span className="opacity-70">Total Cost: </span>
                 <span className="font-medium">
-                  ${(formData.quantity * formData.avgPrice).toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatCurrency(formData.quantity * formData.avgPrice)}
                 </span>
               </div>
               <div>
@@ -215,10 +211,7 @@ const StockModal: React.FC<StockModalProps> = ({
                       : 'var(--error)'
                   }}
                 >
-                  ${Math.abs((formData.currentPrice - formData.avgPrice) * formData.quantity).toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatCurrency(Math.abs((formData.currentPrice - formData.avgPrice) * formData.quantity))}
                 </span>
               </div>
               <div>
@@ -258,7 +251,7 @@ const StockModal: React.FC<StockModalProps> = ({
           >
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <LoadingSpinner />
               </div>
             )}
             <div className={`flex items-center gap-2 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>

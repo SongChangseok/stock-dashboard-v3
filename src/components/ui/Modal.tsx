@@ -1,14 +1,7 @@
 import React, { useEffect } from 'react'
 import { X } from 'lucide-react'
 import Button from './Button'
-
-export interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title?: string
-  children: React.ReactNode
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-}
+import type { ModalProps } from '../../types/portfolio'
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 'md' }) => {
   const modalRef = React.useRef<HTMLDivElement>(null)

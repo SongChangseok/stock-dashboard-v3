@@ -1,6 +1,7 @@
 import React from 'react'
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { Card, CardHeader, CardContent, CardTitle } from '../ui/Card'
+import { usePortfolioStore } from '../../stores/portfolioStore'
 import type { Holding } from '../../types/portfolio'
 
 interface PieChartProps {
@@ -30,7 +31,8 @@ const COLORS = [
 ]
 
 const PieChart: React.FC<PieChartProps> = ({ holdings, title = 'Portfolio Allocation' }) => {
-  const totalValue = holdings.reduce((sum, holding) => sum + holding.marketValue, 0)
+  const { getTotalValue } = usePortfolioStore()
+  const totalValue = getTotalValue()
 
   const chartData: ChartData[] = holdings
     .filter(holding => holding.marketValue > 0)

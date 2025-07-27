@@ -1,6 +1,7 @@
 import React from 'react'
 import { Edit, Trash2 } from 'lucide-react'
 import Table, { Column } from '../ui/Table'
+import ActionButton from '../ui/ActionButton'
 import type { TargetAllocation } from '../../types/portfolio'
 
 interface TargetAllocationTableProps {
@@ -66,20 +67,18 @@ const TargetAllocationTable: React.FC<TargetAllocationTableProps> = ({
       header: 'Actions',
       render: (_, row) => (
         <div className="flex gap-1 min-w-[70px] justify-center">
-          <button
+          <ActionButton
+            icon={Edit}
             onClick={() => onEdit(row)}
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group"
-            title="Edit target allocation"
-          >
-            <Edit className="h-4 w-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
-          </button>
-          <button
+            variant="edit"
+            aria-label="Edit target allocation"
+          />
+          <ActionButton
+            icon={Trash2}
             onClick={() => onDelete(row.symbol)}
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group"
-            title="Delete target allocation"
-          >
-            <Trash2 className="h-4 w-4 text-gray-500 group-hover:text-red-600 transition-colors" />
-          </button>
+            variant="delete"
+            aria-label="Delete target allocation"
+          />
         </div>
       ),
     },
