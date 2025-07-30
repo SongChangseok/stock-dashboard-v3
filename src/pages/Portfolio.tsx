@@ -1,16 +1,14 @@
 import React, { useState } from 'react'
-import { Target, Settings, Plus, BarChart3 } from 'lucide-react'
+import { Plus, BarChart3, PieChart } from 'lucide-react'
 import { usePortfolioStore } from '../stores/portfolioStore'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
 import TargetAllocationModal from '../components/portfolio/TargetAllocationModal'
-import TargetAllocationTable from '../components/portfolio/TargetAllocationTable'
-import StockModal from '../components/portfolio/StockModal'
-import HoldingsTable from '../components/portfolio/HoldingsTable'
+import PortfolioAllocationTable from '../components/portfolio/PortfolioAllocationTable'
 import BarChart from '../components/charts/BarChart'
 import AllocationSummary from '../components/portfolio/AllocationSummary'
 import CollapsibleSection from '../components/ui/CollapsibleSection'
 import useMobileOptimization from '../hooks/useMobileOptimization'
-import type { TargetAllocation, TargetAllocationFormData, Holding, HoldingFormData } from '../types/portfolio'
+import type { TargetAllocation, TargetAllocationFormData } from '../types/portfolio'
 
 const Portfolio: React.FC = () => {
   const { 
@@ -20,16 +18,12 @@ const Portfolio: React.FC = () => {
     addTarget, 
     updateTarget, 
     deleteTarget,
-    updateHolding,
-    deleteHolding,
     ui,
     setLoading 
   } = usePortfolioStore()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTarget, setEditingTarget] = useState<TargetAllocation | null>(null)
-  const [isStockModalOpen, setIsStockModalOpen] = useState(false)
-  const [editingPosition, setEditingPosition] = useState<Holding | null>(null)
   const { compactMode } = useMobileOptimization()
 
   const currentWeights = getCurrentWeights()
@@ -77,41 +71,6 @@ const Portfolio: React.FC = () => {
     setEditingTarget(null)
   }
 
-  const handleEditPosition = (position: Holding) => {
-    setEditingPosition(position)
-    setIsStockModalOpen(true)
-  }
-
-  const handleDeletePosition = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this position?')) {
-      try {
-        setLoading(true)
-        deleteHolding(id)
-      } finally {
-        setLoading(false)
-      }
-    }
-  }
-
-  const handleSavePosition = (formData: HoldingFormData) => {
-    try {
-      setLoading(true)
-      
-      if (editingPosition) {
-        updateHolding(editingPosition.id, formData)
-      }
-      
-      setIsStockModalOpen(false)
-      setEditingPosition(null)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCloseStockModal = () => {
-    setIsStockModalOpen(false)
-    setEditingPosition(null)
-  }
 
   return (
     <div className={`animate-fade-in-scale ${compactMode ? 'space-y-3' : 'space-y-6'}`}>
@@ -152,60 +111,20 @@ const Portfolio: React.FC = () => {
           </CollapsibleSection>
 
           <CollapsibleSection
-            title="Target Allocation"
-            icon={<Target className="h-4 w-4" />}
+            title="Portfolio Allocation"
+            icon={<PieChart className="h-4 w-4" />}
             compactMode={true}
             defaultExpanded={true}
           >
-            {targets.length === 0 ? (
-              <div className="text-center py-6">
-                <div className="text-3xl opacity-20 mb-3">🎯</div>
-                <p className="opacity-70 mb-3 text-sm">
-                  No target allocation has been set
-                </p>
-                <button 
-                  className="btn btn-secondary text-sm"
-                  onClick={handleAddTarget}
-                  disabled={ui.isLoading}
-                >
-                  <Plus className="h-4 w-4" />
-                  Add First Target
-                </button>
-              </div>
-            ) : (
-              <TargetAllocationTable
-                targets={targets}
-                onEdit={handleEditTarget}
-                onDelete={handleDeleteTarget}
-                showTitle={false}
-              />
-            )}
-          </CollapsibleSection>
-
-          <CollapsibleSection
-            title="Current Holdings"
-            icon={<BarChart3 className="h-4 w-4" />}
-            compactMode={true}
-            defaultExpanded={true}
-          >
-            {holdings.length === 0 ? (
-              <div className="text-center py-6">
-                <div className="text-3xl opacity-20 mb-3">📊</div>
-                <p className="opacity-70 text-sm">No positions currently held</p>
-                <div className="text-xs opacity-50 mt-1">
-                  Add holdings to see current allocation
-                </div>
-              </div>
-            ) : (
-              <HoldingsTable
-                holdings={holdings}
-                viewMode="allocation"
-                targets={targets}
-                onEdit={handleEditPosition}
-                onDelete={handleDeletePosition}
-                showTitle={false}
-              />
-            )}
+            <PortfolioAllocationTable
+              targets={targets}
+              holdings={holdings}
+              currentWeights={currentWeights}
+              onEditTarget={handleEditTarget}
+              onDeleteTarget={handleDeleteTarget}
+              showTitle={false}
+              compactMode={true}
+            />
           </CollapsibleSection>
 
           <CollapsibleSection
@@ -222,7 +141,7 @@ const Portfolio: React.FC = () => {
           </CollapsibleSection>
         </div>
       ) : (
-        // Desktop Layout: Original layout
+        // Desktop Layout: Unified table view
         <div className="space-y-6">
           {/* Portfolio Allocation Summary */}
           <AllocationSummary
@@ -230,87 +149,31 @@ const Portfolio: React.FC = () => {
             targets={targets}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Target Allocation Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    <span>Target Allocation</span>
-                  </div>
-                  <button 
-                    className="btn btn-secondary text-sm px-3 py-1.5"
-                    onClick={handleAddTarget}
-                    disabled={ui.isLoading}
-                  >
-                    <Settings className="h-4 w-4" />
-                    Manage
-                  </button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {targets.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="text-4xl opacity-20 mb-4">🎯</div>
-                    <p className="opacity-70 mb-4">
-                      No target allocation has been set
-                    </p>
-                    <button 
-                      className="btn btn-secondary"
-                      onClick={handleAddTarget}
-                      disabled={ui.isLoading}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add First Target
-                    </button>
-                  </div>
-                ) : (
-                  <TargetAllocationTable
-                    targets={targets}
-                    onEdit={handleEditTarget}
-                    onDelete={handleDeleteTarget}
-                    showTitle={false}
-                  />
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Current Holdings Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="text-4xl opacity-20">📊</div>
-                    <span>Current Holdings</span>
-                  </div>
-                  <div className="text-sm opacity-70">
-                    {holdings.length} {holdings.length === 1 ? 'position' : 'positions'}
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {holdings.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="text-4xl opacity-20 mb-4">📊</div>
-                    <p className="opacity-70">No positions currently held</p>
-                    <div className="text-sm opacity-50 mt-1">
-                      Add holdings to see current allocation
-                    </div>
-                  </div>
-                ) : (
-                  <HoldingsTable
-                    holdings={holdings}
-                    viewMode="allocation"
-                    targets={targets}
-                    onEdit={handleEditPosition}
-                    onDelete={handleDeletePosition}
-                    showTitle={false}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          {/* Unified Portfolio Allocation Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <PieChart className="h-5 w-5" />
+                  <span>Portfolio Allocation</span>
+                </div>
+                <div className="text-sm opacity-70">
+                  Target vs Current Holdings
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PortfolioAllocationTable
+                targets={targets}
+                holdings={holdings}
+                currentWeights={currentWeights}
+                onEditTarget={handleEditTarget}
+                onDeleteTarget={handleDeleteTarget}
+                showTitle={false}
+                compactMode={false}
+              />
+            </CardContent>
+          </Card>
 
           {/* Allocation Comparison Chart */}
           <BarChart
@@ -328,15 +191,6 @@ const Portfolio: React.FC = () => {
         onSave={handleSaveTarget}
         editingTarget={editingTarget}
         existingTargets={targets}
-        isLoading={ui.isLoading}
-      />
-
-      {/* Stock Position Modal */}
-      <StockModal
-        isOpen={isStockModalOpen}
-        onClose={handleCloseStockModal}
-        onSave={handleSavePosition}
-        editingPosition={editingPosition}
         isLoading={ui.isLoading}
       />
     </div>

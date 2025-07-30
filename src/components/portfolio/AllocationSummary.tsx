@@ -44,7 +44,7 @@ const AllocationSummary: React.FC<AllocationSummaryProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {/* Total Current Allocation */}
           <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
-            <div className="text-2xl font-bold mb-1" style={{ color: 'var(--primary)' }}>
+            <div className="text-2xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
               {formatPercent(totalCurrentWeight)}
             </div>
             <div className="text-sm opacity-70">Current Allocation</div>
@@ -52,7 +52,7 @@ const AllocationSummary: React.FC<AllocationSummaryProps> = ({
 
           {/* Total Target Allocation */}
           <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
-            <div className="text-2xl font-bold mb-1" style={{ color: 'var(--success)' }}>
+            <div className="text-2xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
               {formatPercent(totalTargetWeight)}
             </div>
             <div className="text-sm opacity-70">Target Allocation</div>
@@ -79,12 +79,12 @@ const AllocationSummary: React.FC<AllocationSummaryProps> = ({
           <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'var(--muted)' }}>
             <div className="flex items-center justify-center gap-2 mb-1">
               <div className="text-2xl font-bold" style={{ 
-                color: unallocatedPositions > 0 ? 'var(--error)' : 'var(--success)' 
+                color: unallocatedPositions > 0 ? 'var(--warning)' : 'var(--foreground)' 
               }}>
                 {formatNumber(unallocatedPositions)}
               </div>
               {unallocatedPositions > 0 && (
-                <AlertTriangle className="h-5 w-5" style={{ color: 'var(--error)' }} />
+                <AlertTriangle className="h-5 w-5" style={{ color: 'var(--warning)' }} />
               )}
             </div>
             <div className="text-sm opacity-70">Unallocated</div>

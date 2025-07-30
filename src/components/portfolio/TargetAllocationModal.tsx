@@ -194,7 +194,7 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
                   style={{ 
                     color: (otherTargetsWeight + formData.targetWeight) > 100 
                       ? 'var(--error)' 
-                      : 'var(--success)' 
+                      : 'var(--foreground)' 
                   }}
                 >
                   {(otherTargetsWeight + formData.targetWeight).toFixed(1)}%

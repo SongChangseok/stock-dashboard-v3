@@ -45,8 +45,9 @@ const BarChart: React.FC<BarChartProps> = ({
 
 
   const getDifferenceColor = (difference: number): string => {
-    if (Math.abs(difference) <= 5) return 'var(--success)'
-    return difference > 0 ? 'var(--warning)' : 'var(--error)'
+    if (Math.abs(difference) <= 1) return 'var(--foreground)'  // Neutral for very small differences
+    if (Math.abs(difference) <= 5) return 'var(--warning)'     // Warning for moderate differences
+    return 'var(--error)'  // Error for large differences (regardless of direction)
   }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -78,7 +79,7 @@ const BarChart: React.FC<BarChartProps> = ({
           
           <div className="flex justify-between items-center">
             <span className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#10B981' }}></div>
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: '#6B7280' }}></div>
               Target:
             </span>
             <span className="font-medium">{formatPercent(data.target)}</span>
@@ -105,7 +106,7 @@ const BarChart: React.FC<BarChartProps> = ({
         <span className="text-sm font-medium">Current Weight</span>
       </div>
       <div className="flex items-center gap-2">
-        <div className="w-4 h-4 rounded" style={{ backgroundColor: '#10B981' }}></div>
+        <div className="w-4 h-4 rounded" style={{ backgroundColor: '#6B7280' }}></div>
         <span className="text-sm font-medium">Target Weight</span>
       </div>
     </div>
@@ -173,7 +174,7 @@ const BarChart: React.FC<BarChartProps> = ({
               />
               <Bar 
                 dataKey="target" 
-                fill="#10B981" 
+                fill="#6B7280" 
                 radius={[2, 2, 0, 0]}
                 name="Target"
               />
