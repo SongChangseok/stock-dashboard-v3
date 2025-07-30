@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
 import TargetAllocationModal from '../components/portfolio/TargetAllocationModal'
 import PortfolioAllocationTable from '../components/portfolio/PortfolioAllocationTable'
 import BarChart from '../components/charts/BarChart'
-import AllocationSummary from '../components/portfolio/AllocationSummary'
 import CollapsibleSection from '../components/ui/CollapsibleSection'
 import useMobileOptimization from '../hooks/useMobileOptimization'
 import type { TargetAllocation, TargetAllocationFormData } from '../types/portfolio'
@@ -99,18 +98,6 @@ const Portfolio: React.FC = () => {
         // Mobile Layout: Collapsible sections
         <div className="space-y-3">
           <CollapsibleSection
-            title="Portfolio Allocation Summary"
-            icon={<BarChart3 className="h-4 w-4" />}
-            compactMode={true}
-            defaultExpanded={true}
-          >
-            <AllocationSummary
-              currentWeights={currentWeights}
-              targets={targets}
-            />
-          </CollapsibleSection>
-
-          <CollapsibleSection
             title="Portfolio Allocation"
             icon={<PieChart className="h-4 w-4" />}
             compactMode={true}
@@ -143,12 +130,6 @@ const Portfolio: React.FC = () => {
       ) : (
         // Desktop Layout: Unified table view
         <div className="space-y-6">
-          {/* Portfolio Allocation Summary */}
-          <AllocationSummary
-            currentWeights={currentWeights}
-            targets={targets}
-          />
-
           {/* Unified Portfolio Allocation Table */}
           <Card>
             <CardHeader>

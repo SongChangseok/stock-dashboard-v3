@@ -39,12 +39,6 @@ export interface Settings {
   lastUpdated: string
 }
 
-// 전체 포트폴리오 데이터
-export interface PortfolioData {
-  holdings: Holding[]
-  targets: TargetAllocation[]
-  settings: Settings
-}
 
 // UI 상태 타입
 export interface UIState {
@@ -88,18 +82,4 @@ export interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
-// CSV 데이터 변환용 타입
-export interface CSVRow {
-  date: string
-  symbol?: string // 포지션 심볼 (선택사항)
-  name: string // 회사명 (필수)
-  quantity: number
-  avgPrice: number
-  currentPrice: number
-  marketValue: number
-  unrealizedGain: number
-  unrealizedGainPercent: number
-  targetWeight: number
-  tag: string
-}
 
