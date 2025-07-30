@@ -104,8 +104,13 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
         sortable: true,
         render: (value, row) => (
           <div className="min-w-[100px]">
-            <div className="font-semibold text-sm">{value}</div>
-            <div className="text-xs opacity-70 truncate max-w-[90px]">{row.name}</div>
+            <div className={`font-semibold text-sm ${row.quantity === 0 ? 'opacity-60' : ''}`}>
+              {value}
+              {row.quantity === 0 && <span className="text-xs ml-1 text-orange-500">(Need to buy)</span>}
+            </div>
+            <div className={`text-xs opacity-70 truncate max-w-[90px] ${row.quantity === 0 ? 'opacity-50' : ''}`}>
+              {row.name}
+            </div>
           </div>
         ),
       }
@@ -118,27 +123,39 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
           key: 'quantity',
           header: 'Qty',
           sortable: true,
-          render: value => <div className="text-right min-w-[50px]">{value.toLocaleString()}</div>,
+          render: value => (
+            <div className={`text-right min-w-[50px] ${value === 0 ? 'opacity-60 text-orange-500' : ''}`}>
+              {value === 0 ? '0 (Buy needed)' : value.toLocaleString()}
+            </div>
+          ),
         },
         {
           key: 'avgPrice',
           header: 'Avg Cost',
           sortable: true,
-          render: value => <div className="text-right min-w-[70px]">${Number(value).toFixed(2)}</div>,
+          render: (value, row) => (
+            <div className={`text-right min-w-[70px] ${row.quantity === 0 ? 'opacity-60' : ''}`}>
+              {row.quantity === 0 ? '-' : `$${Number(value).toFixed(2)}`}
+            </div>
+          ),
         },
         {
           key: 'currentPrice',
           header: 'Market Price',
           sortable: true,
           render: (value, row) => (
-            <div className="text-right min-w-[80px]">
-              <button
-                onClick={() => handlePriceUpdate(row)}
-                className="text-sm hover:underline hover:text-blue-600 transition-colors"
-                title="Click to update price"
-              >
-                ${Number(value).toFixed(2)}
-              </button>
+            <div className={`text-right min-w-[80px] ${row.quantity === 0 ? 'opacity-60' : ''}`}>
+              {row.quantity === 0 ? (
+                <span className="text-sm">-</span>
+              ) : (
+                <button
+                  onClick={() => handlePriceUpdate(row)}
+                  className="text-sm hover:underline hover:text-blue-600 transition-colors"
+                  title="Click to update price"
+                >
+                  ${Number(value).toFixed(2)}
+                </button>
+              )}
             </div>
           ),
         },
@@ -146,9 +163,9 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
           key: 'marketValue',
           header: 'Market Value',
           sortable: true,
-          render: value => (
-            <div className="text-right font-medium min-w-[90px]">
-              ${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+          render: (value, row) => (
+            <div className={`text-right font-medium min-w-[90px] ${row.quantity === 0 ? 'opacity-60' : ''}`}>
+              {row.quantity === 0 ? '-' : `$${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
             </div>
           ),
         },
@@ -157,16 +174,22 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
           header: 'Unrealized P&L',
           sortable: true,
           render: (value, row) => (
-            <div className="text-right min-w-[90px]">
-              <div 
-                className="font-medium text-sm"
-                style={{ color: Number(value) >= 0 ? 'var(--success)' : 'var(--error)' }}
-              >
-                ${Math.abs(Number(value)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-              </div>
-              <div className="text-xs">
-                {formatColoredPercent(row.unrealizedGainPercent)}
-              </div>
+            <div className={`text-right min-w-[90px] ${row.quantity === 0 ? 'opacity-60' : ''}`}>
+              {row.quantity === 0 ? (
+                <div className="text-sm">-</div>
+              ) : (
+                <>
+                  <div 
+                    className="font-medium text-sm"
+                    style={{ color: Number(value) >= 0 ? 'var(--success)' : 'var(--error)' }}
+                  >
+                    ${Math.abs(Number(value)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  </div>
+                  <div className="text-xs">
+                    {formatColoredPercent(row.unrealizedGainPercent)}
+                  </div>
+                </>
+              )}
             </div>
           ),
         }

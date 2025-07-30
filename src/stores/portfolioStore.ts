@@ -31,6 +31,7 @@ interface PortfolioStore {
   getTotalGain: () => number
   getTotalGainPercent: () => number
   getCurrentWeights: () => Record<string, number>
+  getAllHoldings: () => Holding[]
   getRebalancingSuggestions: () => RebalancingSuggestion[]
 
   // Portfolio management actions
@@ -102,6 +103,31 @@ export const usePortfolioStore = create<PortfolioStore>()(
       getCurrentWeights: () => {
         const { holdings } = get()
         return calculateWeights(holdings)
+      },
+
+      getAllHoldings: () => {
+        const { holdings, targets } = get()
+        
+        // 기존 보유 종목의 심볼 리스트
+        const existingSymbols = holdings.map(h => h.symbol)
+        
+        // 타겟에는 있지만 보유하지 않은 종목들을 0 수량으로 추가
+        const missingTargetHoldings: Holding[] = targets
+          .filter(target => !existingSymbols.includes(target.symbol))
+          .map(target => ({
+            id: `target-${target.symbol}`,
+            symbol: target.symbol,
+            name: target.symbol,
+            quantity: 0,
+            avgPrice: 0,
+            currentPrice: 0,
+            marketValue: 0,
+            unrealizedGain: 0,
+            unrealizedGainPercent: 0,
+            tag: target.tag || ''
+          }))
+        
+        return [...holdings, ...missingTargetHoldings]
       },
 
       getRebalancingSuggestions: () => {

@@ -12,6 +12,7 @@ import type { Holding, HoldingFormData } from '../types/portfolio'
 const Holdings: React.FC = () => {
   const {
     holdings,
+    getAllHoldings,
     getTotalValue,
     getTotalGain,
     getTotalGainPercent,
@@ -26,6 +27,7 @@ const Holdings: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingPosition, setEditingPosition] = useState<Holding | null>(null)
   const { compactMode } = useMobileOptimization()
+  const allHoldings = getAllHoldings()
   const totalValue = getTotalValue()
   const totalGain = getTotalGain()
   const totalGainPercent = getTotalGainPercent()
@@ -41,9 +43,23 @@ const Holdings: React.FC = () => {
   }
 
   const handleDeletePosition = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this position?')) {
+    const position = allHoldings.find(h => h.id === id)
+    if (!position) return
+    
+    const isTargetOnly = position.quantity === 0 && id.startsWith('target-')
+    const message = isTargetOnly 
+      ? 'Are you sure you want to remove this target allocation?' 
+      : 'Are you sure you want to delete this position?'
+      
+    if (window.confirm(message)) {
       try {
-        deleteHolding(id)
+        if (isTargetOnly) {
+          // Remove from targets instead of holdings
+          const { deleteTarget } = usePortfolioStore.getState()
+          deleteTarget(position.symbol)
+        } else {
+          deleteHolding(id)
+        }
       } catch (error) {
         setError('Failed to delete position')
       }
@@ -155,7 +171,7 @@ const Holdings: React.FC = () => {
             defaultExpanded={true}
           >
             <HoldingsTable
-              holdings={holdings}
+              holdings={allHoldings}
               onEdit={handleEditPosition}
               onDelete={handleDeletePosition}
               onUpdatePrice={handleUpdatePrice}
@@ -185,7 +201,7 @@ const Holdings: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <HoldingsTable
-                holdings={holdings}
+                holdings={allHoldings}
                 onEdit={handleEditPosition}
                 onDelete={handleDeletePosition}
                 onUpdatePrice={handleUpdatePrice}
