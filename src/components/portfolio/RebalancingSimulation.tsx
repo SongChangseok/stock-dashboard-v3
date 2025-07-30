@@ -16,7 +16,8 @@ interface RebalancingSimulationProps {
 }
 
 interface SimulationResult {
-  symbol: string
+  symbol?: string
+  name: string
   currentQuantity: number
   newQuantity: number
   quantityChange: number
@@ -86,16 +87,18 @@ export const RebalancingSimulation: React.FC<RebalancingSimulationProps> = ({
         const newQuantity = simulatedHolding?.quantity || 0
         const quantityChange = newQuantity - currentQuantity
         
+        const holding = holdingsMap.get(symbol)
         results.push({
-          symbol,
+          symbol: holding?.symbol,
           currentQuantity,
           newQuantity,
           quantityChange,
           currentValue: currentHolding.marketValue,
           newValue: simulatedHolding?.marketValue || 0,
           valueChange: (simulatedHolding?.marketValue || 0) - currentHolding.marketValue,
-          currentWeight: currentWeights[symbol] || 0,
-          newWeight: newWeights[symbol] || 0,
+          name: holding?.name || symbol || '',
+          currentWeight: symbol ? (currentWeights[symbol] || 0) : 0,
+          newWeight: symbol ? (newWeights[symbol] || 0) : 0,
           targetWeight: suggestion?.targetWeight || 0,
         })
       }

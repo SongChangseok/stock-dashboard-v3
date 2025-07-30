@@ -34,7 +34,7 @@ const StockModal: React.FC<StockModalProps> = ({
   useEffect(() => {
     if (editingPosition) {
       setFormData({
-        symbol: editingPosition.symbol,
+        symbol: editingPosition.symbol || '',
         name: editingPosition.name,
         quantity: editingPosition.quantity,
         avgPrice: editingPosition.avgPrice,
@@ -55,10 +55,11 @@ const StockModal: React.FC<StockModalProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof HoldingFormData, string>> = {}
 
-    if (!formData.symbol.trim()) {
-      newErrors.symbol = 'Position symbol is required'
-    } else if (!/^[A-Z]{1,5}$/.test(formData.symbol.toUpperCase())) {
-      newErrors.symbol = 'Position symbol must be 1-5 uppercase letters'
+    // Symbol은 optional, 있다면 유효성 검사
+    if (formData.symbol && formData.symbol.trim()) {
+      if (!/^[A-Z0-9]{1,10}$/.test(formData.symbol.toUpperCase())) {
+        newErrors.symbol = 'Symbol must be 1-10 alphanumeric characters'
+      }
     }
 
     if (!formData.name.trim()) {
@@ -88,7 +89,7 @@ const StockModal: React.FC<StockModalProps> = ({
     if (validateForm()) {
       const submissionData = {
         ...formData,
-        symbol: formData.symbol.toUpperCase(),
+        symbol: formData.symbol ? formData.symbol.toUpperCase() : undefined,
         name: formData.name.trim(),
       }
       onSave(submissionData)
@@ -109,7 +110,7 @@ const StockModal: React.FC<StockModalProps> = ({
   }
 
   const isFormValid = !Object.values(errors).some(error => error) && 
-    formData.symbol && formData.name && formData.quantity > 0 && 
+    formData.name.trim() && formData.quantity > 0 && 
     formData.avgPrice > 0 && formData.currentPrice > 0
 
   return (
@@ -122,19 +123,19 @@ const StockModal: React.FC<StockModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Position Symbol"
-            placeholder="e.g., AAPL"
-            value={formData.symbol}
+            label="Position Symbol (Optional)"
+            placeholder="e.g., AAPL, 005930"
+            value={formData.symbol || ''}
             onChange={e => handleInputChange('symbol', e.target.value)}
             error={errors.symbol}
-            required
             disabled={isLoading}
             className="uppercase"
+            helpText="US stocks: AAPL, Korean stocks: 005930 (optional for Korean stocks)"
           />
 
           <Input
-            label="Company Name"
-            placeholder="e.g., Apple Inc."
+            label="Company Name *"
+            placeholder="e.g., Apple Inc., 삼성전자"
             value={formData.name}
             onChange={e => handleInputChange('name', e.target.value)}
             error={errors.name}

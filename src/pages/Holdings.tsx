@@ -56,7 +56,7 @@ const Holdings: React.FC = () => {
         if (isTargetOnly) {
           // Remove from targets instead of holdings
           const { deleteTarget } = usePortfolioStore.getState()
-          deleteTarget(position.symbol)
+          deleteTarget(position.name)
         } else {
           deleteHolding(id)
         }

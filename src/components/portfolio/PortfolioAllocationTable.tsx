@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react'
-import { Edit, Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { Edit, Trash2 } from 'lucide-react'
 import Table, { Column } from '../ui/Table'
+import { getIdentifier } from '../../utils/calculations'
 import type { TargetAllocation, Holding } from '../../types/portfolio'
 
 interface PortfolioAllocationRow {
-  symbol: string
+  identifier: string
+  symbol?: string
   name: string
   targetWeight: number | null
   currentWeight: number
@@ -19,7 +21,7 @@ interface PortfolioAllocationTableProps {
   holdings: Holding[]
   currentWeights: Record<string, number>
   onEditTarget: (target: TargetAllocation) => void
-  onDeleteTarget: (symbol: string) => void
+  onDeleteTarget: (name: string) => void
   showTitle?: boolean
   compactMode?: boolean
 }
@@ -34,16 +36,16 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
   compactMode = false
 }) => {
   const data = useMemo(() => {
-    // Get all unique symbols from both targets and holdings
-    const allSymbols = Array.from(new Set([
-      ...targets.map(t => t.symbol),
-      ...holdings.map(h => h.symbol)
+    // Get all unique identifiers from both targets and holdings
+    const allIdentifiers = Array.from(new Set([
+      ...targets.map(t => getIdentifier(t)),
+      ...holdings.map(h => getIdentifier(h))
     ])).sort()
 
-    return allSymbols.map((symbol): PortfolioAllocationRow => {
-      const target = targets.find(t => t.symbol === symbol)
-      const holding = holdings.find(h => h.symbol === symbol)
-      const currentWeight = currentWeights[symbol] || 0
+    return allIdentifiers.map((identifier): PortfolioAllocationRow => {
+      const target = targets.find(t => getIdentifier(t) === identifier)
+      const holding = holdings.find(h => getIdentifier(h) === identifier)
+      const currentWeight = currentWeights[identifier] || 0
       const targetWeight = target?.targetWeight || 0
       const difference = currentWeight - targetWeight
 
@@ -59,8 +61,9 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
       }
 
       return {
-        symbol,
-        name: holding?.name || '-',
+        identifier,
+        symbol: target?.symbol || holding?.symbol,
+        name: target?.name || holding?.name || identifier,
         targetWeight: target ? targetWeight : null,
         currentWeight,
         difference,
@@ -80,18 +83,17 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
     return difference > 0 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
   }
 
-  const getDifferenceIcon = (difference: number) => {
-    if (Math.abs(difference) < 0.01) return <Minus className="h-3 w-3" />
-    return difference > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />
-  }
 
   const columns: Column<PortfolioAllocationRow>[] = [
     {
-      key: 'symbol',
-      header: 'Symbol',
+      key: 'identifier',
+      header: 'Position',
       sortable: true,
-      render: (value) => (
-        <span className="font-mono font-medium">{String(value)}</span>
+      render: (_, row) => (
+        <div>
+          <div className="font-mono font-medium">{row.name}</div>
+          {row.symbol && <div className="text-xs opacity-70">({row.symbol})</div>}
+        </div>
       )
     },
     {
@@ -106,7 +108,7 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
     },
     {
       key: 'targetWeight',
-      header: 'Target %',
+      header: 'Target',
       sortable: true,
       render: (value) => (
         <span className="font-mono">
@@ -116,7 +118,7 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
     },
     {
       key: 'currentWeight',
-      header: 'Current %',
+      header: 'Current',
       sortable: true,
       render: (value, row) => (
         <span className="font-mono">
@@ -133,8 +135,7 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
         if (!row.target || !row.holding) return <span>-</span>
         
         return (
-          <div className={`flex items-center justify-end gap-1 ${getDifferenceColor(difference)}`}>
-            {getDifferenceIcon(difference)}
+          <div className={`flex items-center justify-end ${getDifferenceColor(difference)}`}>
             <span className="font-mono">{formatPercentage(Math.abs(difference))}</span>
           </div>
         )
@@ -175,9 +176,9 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
       }
     }]),
     {
-      key: 'symbol',
+      key: 'identifier',
       header: 'Actions',
-      render: (value, row) => (
+      render: (_, row) => (
         <div className="flex items-center justify-center gap-1">
           {row.target && (
             <>
@@ -189,7 +190,7 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
                 <Edit className="h-4 w-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
               </button>
               <button
-                onClick={() => onDeleteTarget(String(value))}
+                onClick={() => onDeleteTarget(row.name)}
                 className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Delete Target"
               >

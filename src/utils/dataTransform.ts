@@ -29,7 +29,7 @@ export const formDataToHolding = (formData: HoldingFormData): Omit<Holding, 'id'
   )
 
   return {
-    symbol: formData.symbol.toUpperCase(),
+    symbol: formData.symbol ? formData.symbol.toUpperCase() : undefined,
     name: formData.name,
     quantity: formData.quantity,
     avgPrice: formData.avgPrice,
@@ -38,5 +38,14 @@ export const formDataToHolding = (formData: HoldingFormData): Omit<Holding, 'id'
     unrealizedGain: gain,
     unrealizedGainPercent: gainPercent,
   }
+}
+
+/**
+ * 종목 중복 검사 (name 기준)
+ */
+export const checkDuplicateName = (holdings: Holding[], name: string, excludeId?: string): boolean => {
+  return holdings.some(holding => 
+    holding.name === name && holding.id !== excludeId
+  )
 }
 

@@ -54,7 +54,7 @@ const Portfolio: React.FC = () => {
       setLoading(true)
       
       if (editingTarget) {
-        updateTarget(editingTarget.symbol, formData)
+        updateTarget(editingTarget.name, formData)
       } else {
         addTarget(formData)
       }

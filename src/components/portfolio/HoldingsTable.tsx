@@ -3,6 +3,7 @@ import { Edit, Trash2 } from 'lucide-react'
 import Table, { Column } from '../ui/Table'
 import ActionButton from '../ui/ActionButton'
 import { usePortfolioStore } from '../../stores/portfolioStore'
+import { getIdentifier } from '../../utils/calculations'
 import type { Holding, HoldingsTableViewMode, AllocationInfo, TargetAllocation } from '../../types/portfolio'
 
 interface HoldingsTableProps {
@@ -36,7 +37,8 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
 
   const handlePriceUpdate = React.useCallback((holding: Holding) => {
     if (!onUpdatePrice) return
-    const newPrice = prompt(`Update current price for ${holding.symbol}`, holding.currentPrice.toString())
+    const displayName = holding.symbol ? `${holding.name} (${holding.symbol})` : holding.name
+    const newPrice = prompt(`Update current price for ${displayName}`, holding.currentPrice.toString())
     if (newPrice && !isNaN(Number(newPrice)) && Number(newPrice) > 0) {
       onUpdatePrice(holding.id, Number(newPrice))
     }
@@ -48,7 +50,8 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
   
   const getAllocationInfo = (holding: Holding): AllocationInfo => {
     const currentWeight = totalValue > 0 ? (holding.marketValue / totalValue) * 100 : 0
-    const target = targets.find(t => t.symbol === holding.symbol)
+    const holdingIdentifier = getIdentifier(holding)
+    const target = targets.find(t => getIdentifier(t) === holdingIdentifier)
     const hasTarget = !!target
     const targetWeight = target?.targetWeight || 0
     const deviation = hasTarget ? currentWeight - targetWeight : 0
@@ -61,6 +64,7 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
     
     return {
       symbol: holding.symbol,
+      name: holding.name,
       currentWeight,
       targetWeight,
       hasTarget,
@@ -99,18 +103,20 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
   const getColumns = (): Column<Holding>[] => {
     const baseColumns: Column<Holding>[] = [
       {
-        key: 'symbol',
+        key: 'name',
         header: 'Position',
         sortable: true,
-        render: (value, row) => (
+        render: (_, row) => (
           <div className="min-w-[100px]">
             <div className={`font-semibold text-sm ${row.quantity === 0 ? 'opacity-60' : ''}`}>
-              {value}
+              {row.name}
               {row.quantity === 0 && <span className="text-xs ml-1 text-orange-500">(Need to buy)</span>}
             </div>
-            <div className={`text-xs opacity-70 truncate max-w-[90px] ${row.quantity === 0 ? 'opacity-50' : ''}`}>
-              {row.name}
-            </div>
+            {row.symbol && (
+              <div className={`text-xs opacity-70 truncate max-w-[90px] ${row.quantity === 0 ? 'opacity-50' : ''}`}>
+                {row.symbol}
+              </div>
+            )}
           </div>
         ),
       }
@@ -123,9 +129,9 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
           key: 'quantity',
           header: 'Qty',
           sortable: true,
-          render: value => (
-            <div className={`text-right min-w-[50px] ${value === 0 ? 'opacity-60 text-orange-500' : ''}`}>
-              {value === 0 ? '0 (Buy needed)' : value.toLocaleString()}
+          render: (value) => (
+            <div className={`text-right min-w-[50px] ${(value || 0) === 0 ? 'opacity-60 text-orange-500' : ''}`}>
+              {(value || 0) === 0 ? '0 (Buy needed)' : (value || 0).toLocaleString()}
             </div>
           ),
         },
@@ -165,7 +171,7 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
           sortable: true,
           render: (value, row) => (
             <div className={`text-right font-medium min-w-[90px] ${row.quantity === 0 ? 'opacity-60' : ''}`}>
-              {row.quantity === 0 ? '-' : `$${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+              {row.quantity === 0 ? '-' : `$${(value || 0).toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
             </div>
           ),
         },
@@ -181,9 +187,9 @@ const HoldingsTable: React.FC<HoldingsTableProps> = React.memo(({
                 <>
                   <div 
                     className="font-medium text-sm"
-                    style={{ color: Number(value) >= 0 ? 'var(--success)' : 'var(--error)' }}
+                    style={{ color: Number(value || 0) >= 0 ? 'var(--success)' : 'var(--error)' }}
                   >
-                    ${Math.abs(Number(value)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    ${Math.abs(Number(value || 0)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
                   <div className="text-xs">
                     {formatColoredPercent(row.unrealizedGainPercent)}

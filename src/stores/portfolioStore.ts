@@ -17,7 +17,9 @@ import {
   formDataToHolding,
   getCurrentISODate,
   generateId,
+  checkDuplicateName,
 } from '../utils/dataTransform'
+import { getIdentifier } from '../utils/calculations'
 
 interface PortfolioStore {
   // State
@@ -44,8 +46,8 @@ interface PortfolioStore {
   // Target allocation actions
   setTargets: (targets: TargetAllocation[]) => void
   addTarget: (target: TargetAllocation) => void
-  updateTarget: (symbol: string, target: Partial<TargetAllocation>) => void
-  deleteTarget: (symbol: string) => void
+  updateTarget: (name: string, target: Partial<TargetAllocation>) => void
+  deleteTarget: (name: string) => void
 
   // Settings actions
   updateSettings: (settings: Partial<Settings>) => void
@@ -108,23 +110,22 @@ export const usePortfolioStore = create<PortfolioStore>()(
       getAllHoldings: () => {
         const { holdings, targets } = get()
         
-        // 기존 보유 종목의 심볼 리스트
-        const existingSymbols = holdings.map(h => h.symbol)
+        // 기존 보유 종목의 식별자 리스트
+        const existingIdentifiers = holdings.map(h => getIdentifier(h))
         
         // 타겟에는 있지만 보유하지 않은 종목들을 0 수량으로 추가
         const missingTargetHoldings: Holding[] = targets
-          .filter(target => !existingSymbols.includes(target.symbol))
+          .filter(target => !existingIdentifiers.includes(getIdentifier(target)))
           .map(target => ({
-            id: `target-${target.symbol}`,
+            id: `target-${getIdentifier(target)}`,
             symbol: target.symbol,
-            name: target.symbol,
+            name: target.name,
             quantity: 0,
             avgPrice: 0,
             currentPrice: 0,
             marketValue: 0,
             unrealizedGain: 0,
             unrealizedGainPercent: 0,
-            tag: target.tag || ''
           }))
         
         return [...holdings, ...missingTargetHoldings]
@@ -144,6 +145,13 @@ export const usePortfolioStore = create<PortfolioStore>()(
 
       addHolding: formData => {
         const { holdings } = get()
+        
+        // 중복 name 검사
+        if (checkDuplicateName(holdings, formData.name)) {
+          get().setError(`종목명 "${formData.name}"이(가) 이미 존재합니다.`)
+          return
+        }
+        
         const newHolding: Holding = {
           ...formDataToHolding(formData),
           id: generateId(),
@@ -155,6 +163,13 @@ export const usePortfolioStore = create<PortfolioStore>()(
 
       updateHolding: (id, formData) => {
         const { holdings } = get()
+        
+        // 중복 name 검사 (현재 수정 중인 항목 제외)
+        if (checkDuplicateName(holdings, formData.name, id)) {
+          get().setError(`종목명 "${formData.name}"이(가) 이미 존재합니다.`)
+          return
+        }
+        
         const updatedHoldings = holdings.map(holding =>
           holding.id === id ? { ...formDataToHolding(formData), id } : holding
         )
@@ -205,17 +220,17 @@ export const usePortfolioStore = create<PortfolioStore>()(
           settings: { ...state.settings, lastUpdated: getCurrentISODate() },
         })),
 
-      updateTarget: (symbol, targetUpdate) =>
+      updateTarget: (name, targetUpdate) =>
         set(state => ({
           targets: state.targets.map(target =>
-            target.symbol === symbol ? { ...target, ...targetUpdate } : target
+            target.name === name ? { ...target, ...targetUpdate } : target
           ),
           settings: { ...state.settings, lastUpdated: getCurrentISODate() },
         })),
 
-      deleteTarget: symbol =>
+      deleteTarget: name =>
         set(state => ({
-          targets: state.targets.filter(target => target.symbol !== symbol),
+          targets: state.targets.filter(target => target.name !== name),
           settings: { ...state.settings, lastUpdated: getCurrentISODate() },
         })),
 

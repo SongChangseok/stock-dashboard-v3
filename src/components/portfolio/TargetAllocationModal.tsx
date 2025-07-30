@@ -24,6 +24,7 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<TargetAllocationFormData>({
     symbol: '',
+    name: '',
     targetWeight: 0,
     tag: '',
   })
@@ -33,13 +34,15 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
   useEffect(() => {
     if (editingTarget) {
       setFormData({
-        symbol: editingTarget.symbol,
+        symbol: editingTarget.symbol || '',
+        name: editingTarget.name,
         targetWeight: editingTarget.targetWeight,
         tag: editingTarget.tag,
       })
     } else {
       setFormData({
         symbol: '',
+        name: '',
         targetWeight: 0,
         tag: '',
       })
@@ -50,12 +53,19 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof TargetAllocationFormData, string>> = {}
 
-    if (!formData.symbol.trim()) {
-      newErrors.symbol = 'Position symbol is required'
-    } else if (!/^[A-Z]{1,5}$/.test(formData.symbol.toUpperCase())) {
-      newErrors.symbol = 'Position symbol must be 1-5 uppercase letters'
-    } else if (!editingTarget && existingTargets.some(target => target.symbol === formData.symbol.toUpperCase())) {
-      newErrors.symbol = 'Position symbol already exists in target allocation'
+    // Symbol은 optional, 있다면 유효성 검사  
+    if (formData.symbol && formData.symbol.trim()) {
+      if (!/^[A-Z0-9]{1,10}$/.test(formData.symbol.toUpperCase())) {
+        newErrors.symbol = 'Symbol must be 1-10 alphanumeric characters'
+      }
+    }
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Company name is required'
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Company name must be at least 2 characters'
+    } else if (!editingTarget && existingTargets.some(target => target.name === formData.name.trim())) {
+      newErrors.name = 'Company name already exists in target allocation'
     }
 
     if (formData.targetWeight <= 0) {
@@ -66,7 +76,7 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
 
     // Check if total would exceed 100%
     const otherTargetsWeight = existingTargets
-      .filter(target => !editingTarget || target.symbol !== editingTarget.symbol)
+      .filter(target => !editingTarget || target.name !== editingTarget.name)
       .reduce((sum, target) => sum + target.targetWeight, 0)
     
     if (otherTargetsWeight + formData.targetWeight > 100) {
@@ -88,7 +98,8 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
     if (validateForm()) {
       const submissionData = {
         ...formData,
-        symbol: formData.symbol.toUpperCase(),
+        symbol: formData.symbol ? formData.symbol.toUpperCase() : undefined,
+        name: formData.name.trim(),
         tag: formData.tag.trim(),
       }
       onSave(submissionData)
@@ -109,11 +120,11 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
   }
 
   const isFormValid = !Object.values(errors).some(error => error) && 
-    formData.symbol && formData.targetWeight > 0 && formData.tag
+    formData.name.trim() && formData.targetWeight > 0 && formData.tag
 
   // Calculate remaining allocation
   const otherTargetsWeight = existingTargets
-    .filter(target => !editingTarget || target.symbol !== editingTarget.symbol)
+    .filter(target => !editingTarget || target.name !== editingTarget.name)
     .reduce((sum, target) => sum + target.targetWeight, 0)
   const remainingWeight = 100 - otherTargetsWeight
 
@@ -127,16 +138,28 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Position Symbol"
-            placeholder="e.g., AAPL"
-            value={formData.symbol}
+            label="Position Symbol (Optional)"
+            placeholder="e.g., AAPL, 005930"
+            value={formData.symbol || ''}
             onChange={e => handleInputChange('symbol', e.target.value)}
             error={errors.symbol}
-            required
             disabled={isLoading || !!editingTarget}
             className="uppercase"
+            helpText="Optional for Korean stocks"
           />
 
+          <Input
+            label="Company Name *"
+            placeholder="e.g., Apple Inc., 삼성전자"
+            value={formData.name}
+            onChange={e => handleInputChange('name', e.target.value)}
+            error={errors.name}
+            required
+            disabled={isLoading || !!editingTarget}
+          />
+        </div>
+        
+        <div>
           <Input
             label="Tag"
             placeholder="e.g., Tech, Finance"
@@ -180,6 +203,10 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
                 <span className="font-medium uppercase">{formData.symbol || 'N/A'}</span>
               </div>
               <div>
+                <span className="opacity-70">Name: </span>
+                <span className="font-medium">{formData.name || 'N/A'}</span>
+              </div>
+              <div>
                 <span className="opacity-70">Tag: </span>
                 <span className="font-medium">{formData.tag || 'N/A'}</span>
               </div>
@@ -187,7 +214,7 @@ const TargetAllocationModal: React.FC<TargetAllocationModalProps> = ({
                 <span className="opacity-70">Target Weight: </span>
                 <span className="font-medium">{formData.targetWeight.toFixed(1)}%</span>
               </div>
-              <div>
+              <div className="col-span-2">
                 <span className="opacity-70">After Total: </span>
                 <span 
                   className="font-medium"

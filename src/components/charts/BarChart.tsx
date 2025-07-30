@@ -1,7 +1,7 @@
 import React from 'react'
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Card, CardHeader, CardContent, CardTitle } from '../ui/Card'
-import { formatPercent } from '../../utils/calculations'
+import { formatPercent, getIdentifier } from '../../utils/calculations'
 import type { TargetAllocation } from '../../types/portfolio'
 
 interface BarChartProps {
@@ -11,7 +11,8 @@ interface BarChartProps {
 }
 
 interface ChartData {
-  symbol: string
+  symbol?: string
+  name: string
   tag: string
   current: number
   target: number
@@ -23,19 +24,20 @@ const BarChart: React.FC<BarChartProps> = ({
   targets, 
   title = 'Current vs Target Allocation' 
 }) => {
-  // Combine current weights and targets
-  const allSymbols = new Set([
+  // Combine current weights and targets using identifiers
+  const allIdentifiers = new Set([
     ...Object.keys(currentWeights),
-    ...targets.map(t => t.symbol)
+    ...targets.map(t => getIdentifier(t))
   ])
 
-  const chartData: ChartData[] = Array.from(allSymbols).map(symbol => {
-    const target = targets.find(t => t.symbol === symbol)
-    const current = currentWeights[symbol] || 0
+  const chartData: ChartData[] = Array.from(allIdentifiers).map(identifier => {
+    const target = targets.find(t => getIdentifier(t) === identifier)
+    const current = currentWeights[identifier] || 0
     const targetWeight = target?.targetWeight || 0
     
     return {
-      symbol,
+      symbol: target?.symbol,
+      name: target?.name || identifier,
       tag: target?.tag || 'Untagged',
       current: current,
       target: targetWeight,
@@ -53,7 +55,7 @@ const BarChart: React.FC<BarChartProps> = ({
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload || !payload.length) return null
 
-    const data = chartData.find(d => d.symbol === label)
+    const data = chartData.find(d => d.name === label)
     if (!data) return null
 
     return (
@@ -65,7 +67,10 @@ const BarChart: React.FC<BarChartProps> = ({
           color: 'var(--foreground)'
         }}
       >
-        <div className="font-semibold text-base mb-2">{data.symbol}</div>
+        <div className="font-semibold text-base mb-2">
+          {data.name}
+          {data.symbol && <div className="text-sm opacity-70 font-normal">({data.symbol})</div>}
+        </div>
         <div className="text-sm opacity-70 mb-3">{data.tag}</div>
         
         <div className="space-y-2">
@@ -152,7 +157,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 opacity={0.3}
               />
               <XAxis 
-                dataKey="symbol" 
+                dataKey="name"
                 stroke="var(--muted-foreground)"
                 fontSize={12}
                 tickLine={false}
@@ -195,7 +200,10 @@ const BarChart: React.FC<BarChartProps> = ({
           </div>
           {chartData.map((item, index) => (
             <div key={index} className="flex justify-between items-center text-sm">
-              <div className="font-medium min-w-[60px]">{item.symbol}</div>
+              <div className="font-medium min-w-[60px]">
+                {item.name}
+                {item.symbol && <div className="text-xs opacity-70">({item.symbol})</div>}
+              </div>
               <div className="text-xs px-2 py-1 rounded-full text-center min-w-[80px]" 
                    style={{ 
                      backgroundColor: 'var(--muted)', 

@@ -1,8 +1,8 @@
 // 보유 포지션 정보
 export interface Holding {
   id: string
-  symbol: string // 포지션 심볼
-  name: string // 회사명
+  symbol?: string // 포지션 심볼 (선택사항, 한국 주식의 경우 없을 수 있음)
+  name: string // 회사명 (primary identifier)
   quantity: number // 보유 수량
   avgPrice: number // 평균 매수 원가
   currentPrice: number // 현재 시장 가격
@@ -14,14 +14,16 @@ export interface Holding {
 
 // 목표 자산 배분
 export interface TargetAllocation {
-  symbol: string
+  symbol?: string // 포지션 심볼 (선택사항)
+  name: string // 회사명 (primary identifier)
   targetWeight: number
   tag: string
 }
 
 // 리밸런싱 제안
 export interface RebalancingSuggestion {
-  symbol: string
+  symbol?: string // 포지션 심볼 (선택사항)
+  name: string // 회사명 (primary identifier)
   action: 'buy' | 'sell'
   quantity: number
   amount: number
@@ -52,15 +54,16 @@ export interface UIState {
 
 // 컴포넌트 Props 타입
 export interface HoldingFormData {
-  symbol: string
-  name: string
+  symbol?: string // 포지션 심볼 (선택사항)
+  name: string // 회사명 (필수)
   quantity: number
   avgPrice: number
   currentPrice: number
 }
 
 export interface TargetAllocationFormData {
-  symbol: string
+  symbol?: string // 포지션 심볼 (선택사항)
+  name: string // 회사명 (필수)
   targetWeight: number
   tag: string
 }
@@ -68,7 +71,8 @@ export interface TargetAllocationFormData {
 export type HoldingsTableViewMode = 'full' | 'allocation'
 
 export interface AllocationInfo {
-  symbol: string
+  symbol?: string // 포지션 심볼 (선택사항)
+  name: string // 회사명 (primary identifier)
   currentWeight: number
   targetWeight?: number
   hasTarget: boolean
@@ -87,8 +91,8 @@ export interface ModalProps {
 // CSV 데이터 변환용 타입
 export interface CSVRow {
   date: string
-  symbol: string
-  name: string
+  symbol?: string // 포지션 심볼 (선택사항)
+  name: string // 회사명 (필수)
   quantity: number
   avgPrice: number
   currentPrice: number
@@ -98,3 +102,4 @@ export interface CSVRow {
   targetWeight: number
   tag: string
 }
+

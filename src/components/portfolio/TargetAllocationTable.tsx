@@ -75,7 +75,7 @@ const TargetAllocationTable: React.FC<TargetAllocationTableProps> = ({
           />
           <ActionButton
             icon={Trash2}
-            onClick={() => onDelete(row.symbol)}
+            onClick={() => onDelete(row.name)}
             variant="delete"
             aria-label="Delete target allocation"
           />

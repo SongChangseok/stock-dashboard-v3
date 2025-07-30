@@ -1,7 +1,7 @@
 import React from 'react'
 import { TrendingUp, Target, AlertTriangle, CheckCircle } from 'lucide-react'
 import { Card, CardHeader, CardContent, CardTitle } from '../ui/Card'
-import { formatPercent } from '../../utils/calculations'
+import { formatPercent, getIdentifier } from '../../utils/calculations'
 import type { TargetAllocation } from '../../types/portfolio'
 
 interface AllocationSummaryProps {
@@ -18,12 +18,13 @@ const AllocationSummary: React.FC<AllocationSummaryProps> = ({
   const totalTargetWeight = targets.reduce((sum, target) => sum + target.targetWeight, 0)
   
   const allocationsNeedingRebalancing = targets.filter(target => {
-    const currentWeight = currentWeights[target.symbol] || 0
+    const targetIdentifier = getIdentifier(target)
+    const currentWeight = currentWeights[targetIdentifier] || 0
     return Math.abs(currentWeight - target.targetWeight) > 5
   }).length
 
-  const unallocatedPositions = Object.keys(currentWeights).filter(symbol => 
-    !targets.some(target => target.symbol === symbol)
+  const unallocatedPositions = Object.keys(currentWeights).filter(identifier => 
+    !targets.some(target => getIdentifier(target) === identifier)
   ).length
 
   const allocationEfficiency = totalTargetWeight > 0 

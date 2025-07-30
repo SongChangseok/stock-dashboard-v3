@@ -4,6 +4,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   label?: string
   error?: string
   helper?: string
+  helpText?: string
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
   variant?: 'default' | 'filled' | 'minimal'
@@ -17,6 +18,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       label,
       error,
       helper,
+      helpText,
       leftIcon,
       rightIcon,
       variant = 'default',
@@ -112,6 +114,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {helper && !error && (
           <p id={helperId} className="text-sm text-gray-500 dark:text-gray-400">
             {helper}
+          </p>
+        )}
+        {helpText && !error && (
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            {helpText}
           </p>
         )}
       </div>

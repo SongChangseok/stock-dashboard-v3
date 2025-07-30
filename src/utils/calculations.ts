@@ -39,6 +39,13 @@ export const calculatePortfolioTotals = (
 }
 
 /**
+ * 종목 식별자 생성 (symbol 우선, 없으면 name)
+ */
+export const getIdentifier = (item: { symbol?: string; name: string }): string => {
+  return item.symbol || item.name
+}
+
+/**
  * 포트폴리오 비중 계산
  */
 export const calculateWeights = (holdings: Holding[]): Record<string, number> => {
@@ -48,7 +55,8 @@ export const calculateWeights = (holdings: Holding[]): Record<string, number> =>
 
   const weights: Record<string, number> = {}
   holdings.forEach(holding => {
-    weights[holding.symbol] = (holding.marketValue / totalValue) * 100
+    const identifier = getIdentifier(holding)
+    weights[identifier] = (holding.marketValue / totalValue) * 100
   })
 
   return weights
@@ -71,11 +79,12 @@ export const generateRebalancingSuggestions = (
   const threshold = 5
 
   for (const target of targets) {
-    const currentWeight = currentWeights[target.symbol] || 0
+    const targetIdentifier = getIdentifier(target)
+    const currentWeight = currentWeights[targetIdentifier] || 0
     const deviation = Math.abs(currentWeight - target.targetWeight)
 
     if (deviation >= threshold) {
-      const holding = holdings.find(h => h.symbol === target.symbol)
+      const holding = holdings.find(h => getIdentifier(h) === targetIdentifier)
       if (!holding) continue
 
       const targetValue = (target.targetWeight / 100) * totalValue
@@ -92,6 +101,7 @@ export const generateRebalancingSuggestions = (
 
         suggestions.push({
           symbol: target.symbol,
+          name: target.name,
           action,
           quantity,
           amount,

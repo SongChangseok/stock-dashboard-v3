@@ -11,7 +11,7 @@ interface PieChartProps {
 
 interface ChartData {
   name: string
-  symbol: string
+  symbol?: string
   value: number
   percentage: number
   color: string
@@ -67,8 +67,8 @@ const PieChart: React.FC<PieChartProps> = ({ holdings, title = 'Portfolio Alloca
           color: 'var(--foreground)'
         }}
       >
-        <div className="font-semibold">{data.symbol}</div>
-        <div className="text-sm opacity-70">{data.name}</div>
+        <div className="font-semibold">{data.name}</div>
+        {data.symbol && <div className="text-sm opacity-70">({data.symbol})</div>}
         <div className="mt-1">
           <div className="font-medium">{formatCurrency(data.value)}</div>
           <div className="text-sm opacity-70">{data.percentage.toFixed(1)}%</div>
@@ -88,7 +88,8 @@ const PieChart: React.FC<PieChartProps> = ({ holdings, title = 'Portfolio Alloca
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="font-medium">{entry.payload.symbol}</span>
+            <span className="font-medium">{entry.payload.name}</span>
+            {entry.payload.symbol && <span className="text-xs opacity-60">({entry.payload.symbol})</span>}
             <span className="opacity-70">
               {entry.payload.percentage.toFixed(1)}%
             </span>
@@ -168,10 +169,12 @@ const PieChart: React.FC<PieChartProps> = ({ holdings, title = 'Portfolio Alloca
                   style={{ backgroundColor: item.color }}
                 />
                 <div>
-                  <div className="font-medium">{item.symbol}</div>
-                  <div className="text-xs opacity-70 truncate max-w-[120px]">
-                    {item.name}
-                  </div>
+                  <div className="font-medium">{item.name}</div>
+                  {item.symbol && (
+                    <div className="text-xs opacity-70 truncate max-w-[120px]">
+                      ({item.symbol})
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="font-medium">
