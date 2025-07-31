@@ -4,7 +4,7 @@ import { usePortfolioStore } from '../stores/portfolioStore'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
 import TargetAllocationModal from '../components/portfolio/TargetAllocationModal'
 import PortfolioAllocationTable from '../components/portfolio/PortfolioAllocationTable'
-import BarChart from '../components/charts/BarChart'
+import ColumnChart from '../components/charts/ColumnChart'
 import CollapsibleSection from '../components/ui/CollapsibleSection'
 import useMobileOptimization from '../hooks/useMobileOptimization'
 import type { TargetAllocation, TargetAllocationFormData } from '../types/portfolio'
@@ -120,7 +120,7 @@ const Portfolio: React.FC = () => {
             compactMode={true}
             defaultExpanded={false}
           >
-            <BarChart
+            <ColumnChart
               currentWeights={currentWeights}
               targets={targets}
               title=""
@@ -128,40 +128,26 @@ const Portfolio: React.FC = () => {
           </CollapsibleSection>
         </div>
       ) : (
-        // Desktop Layout: Unified table view
-        <div className="space-y-6">
-          {/* Unified Portfolio Allocation Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <PieChart className="h-5 w-5" />
-                  <span>Portfolio Allocation</span>
-                </div>
-                <div className="text-sm opacity-70">
-                  Target vs Current Holdings
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PortfolioAllocationTable
-                targets={targets}
-                holdings={holdings}
-                currentWeights={currentWeights}
-                onEditTarget={handleEditTarget}
-                onDeleteTarget={handleDeleteTarget}
-                showTitle={false}
-                compactMode={false}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Allocation Comparison Chart */}
-          <BarChart
-            currentWeights={currentWeights}
-            targets={targets}
-            title="Current vs Target Allocation Comparison"
-          />
+        // Desktop Layout: Holdings-style grid layout
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <PortfolioAllocationTable
+              targets={targets}
+              holdings={holdings}
+              currentWeights={currentWeights}
+              onEditTarget={handleEditTarget}
+              onDeleteTarget={handleDeleteTarget}
+              showTitle={true}
+              compactMode={false}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <ColumnChart
+              currentWeights={currentWeights}
+              targets={targets}
+              title="Allocation Comparison"
+            />
+          </div>
         </div>
       )}
 

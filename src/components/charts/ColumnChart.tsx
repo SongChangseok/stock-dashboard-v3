@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle } from '../ui/Card'
 import { formatPercent, getIdentifier } from '../../utils/calculations'
 import type { TargetAllocation } from '../../types/portfolio'
 
-interface BarChartProps {
+interface ColumnChartProps {
   currentWeights: Record<string, number>
   targets: TargetAllocation[]
   title?: string
@@ -19,7 +19,7 @@ interface ChartData {
   difference: number
 }
 
-const BarChart: React.FC<BarChartProps> = ({ 
+const ColumnChart: React.FC<ColumnChartProps> = ({ 
   currentWeights, 
   targets, 
   title = 'Current vs Target Allocation' 
@@ -44,7 +44,6 @@ const BarChart: React.FC<BarChartProps> = ({
       difference: current - targetWeight,
     }
   }).sort((a, b) => Math.max(b.current, b.target) - Math.max(a.current, a.target))
-
 
   const getDifferenceColor = (difference: number): string => {
     if (Math.abs(difference) <= 1) return 'var(--foreground)'  // Neutral for very small differences
@@ -148,7 +147,7 @@ const BarChart: React.FC<BarChartProps> = ({
           <ResponsiveContainer width="100%" height="100%">
             <RechartsBarChart
               data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
               barCategoryGap="20%"
             >
               <CartesianGrid 
@@ -159,9 +158,12 @@ const BarChart: React.FC<BarChartProps> = ({
               <XAxis 
                 dataKey="name"
                 stroke="var(--muted-foreground)"
-                fontSize={12}
+                fontSize={11}
                 tickLine={false}
                 axisLine={false}
+                angle={-45}
+                textAnchor="end"
+                height={60}
               />
               <YAxis 
                 stroke="var(--muted-foreground)"
@@ -188,9 +190,45 @@ const BarChart: React.FC<BarChartProps> = ({
         </div>
 
         <CustomLegend />
+
+        <div className="mt-6 space-y-3">
+          <div className="flex justify-between items-center text-sm font-semibold border-b pb-2" style={{ borderColor: 'var(--border)' }}>
+            <span>Position</span>
+            <span>Current</span>
+            <span>Target</span>
+            <span>Difference</span>
+          </div>
+          {chartData.map((item, index) => (
+            <div key={index} className="flex justify-between items-center text-sm">
+              <div>
+                <div className="font-mono font-medium">{item.name}</div>
+                {item.symbol && <div className="text-xs opacity-70">({item.symbol})</div>}
+              </div>
+              <div className="font-medium text-right min-w-[60px]">
+                {formatPercent(item.current)}
+              </div>
+              <div className="font-medium text-right min-w-[60px]">
+                {formatPercent(item.target)}
+              </div>
+              <div 
+                className="font-medium text-right min-w-[80px]"
+                style={{ color: getDifferenceColor(item.difference) }}
+              >
+                {item.difference > 0 ? '+' : ''}{formatPercent(item.difference)}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex justify-between items-center font-semibold">
+            <span>Total Allocations</span>
+            <span>{chartData.length} {chartData.length === 1 ? 'position' : 'positions'}</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )
 }
 
-export default BarChart
+export default ColumnChart

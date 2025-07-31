@@ -205,12 +205,18 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
 
   if (data.length === 0) {
     return (
-      <div>
+      <div className="space-y-4">
         {showTitle && (
-          <h3 className={`font-medium mb-4 ${compactMode ? 'text-base' : 'text-lg'}`}>
-            Portfolio Allocation Overview
-          </h3>
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              Portfolio Allocation
+            </h2>
+            <div className="text-sm opacity-70">
+              0 allocations
+            </div>
+          </div>
         )}
+        
         <div className="text-center py-8">
           <div className="text-3xl opacity-20 mb-3">🎯</div>
           <p className="opacity-70 mb-3">
@@ -225,12 +231,18 @@ const PortfolioAllocationTable: React.FC<PortfolioAllocationTableProps> = ({
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       {showTitle && (
-        <h3 className={`font-medium mb-4 ${compactMode ? 'text-base' : 'text-lg'}`}>
-          Portfolio Allocation Overview
-        </h3>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            Portfolio Allocation
+          </h2>
+          <div className="text-sm opacity-70">
+            {data.length} {data.length === 1 ? 'allocation' : 'allocations'}
+          </div>
+        </div>
       )}
+
       <Table 
         data={data}
         columns={columns}
